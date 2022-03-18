@@ -6,7 +6,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import ru.example.andoid_app_news.databinding.ActivityMainBinding
 
-private const val MAIN_BACKSTACK = "MAIN_BACKSTACK"
 
 class MainActivity : AppCompatActivity() {
 
