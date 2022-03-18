@@ -2,8 +2,9 @@ package ru.example.andoid_app_news
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import ru.example.andoid_app_news.databinding.ActivityMainBinding
-import ru.example.andoid_app_news.ui.pages.MainFragment
 
 private const val MAIN_BACKSTACK = "MAIN_BACKSTACK"
 
@@ -21,11 +22,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         mainBinding?.let {
-            supportFragmentManager.beginTransaction()
-                .add(it.mainFrameContainer.id, MainFragment.newInstance())
-                .addToBackStack(MAIN_BACKSTACK)
-                .commit()
+            val navHostFragment =
+                supportFragmentManager.findFragmentById(it.navFragment.id) as NavHostFragment
+            val navController = navHostFragment.navController
+            it.bottomNavigatinView.setupWithNavController(navController)
         }
-
     }
 }
