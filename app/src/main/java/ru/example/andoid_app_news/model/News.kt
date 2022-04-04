@@ -1,6 +1,6 @@
 package ru.example.andoid_app_news.model
 
-data class NewsModel(
+data class News(
     var url: String?,
     var description: String?,
     var title: String?,

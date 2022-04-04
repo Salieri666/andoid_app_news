@@ -6,26 +6,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.example.andoid_app_news.R
-import ru.example.andoid_app_news.model.NewsModel
+import ru.example.andoid_app_news.model.News
 
 class RecyclerNewsAdapter : RecyclerView.Adapter<RecyclerNewsAdapter.NewsHolder>()  {
 
-    private var news: List<NewsModel> = arrayListOf(
-        NewsModel("","","Title1", "Date1","","Source1"),
-        NewsModel("","","Title2", "Date2","","Source2"),
-        NewsModel("","","Title3", "Date3","","Source3"),
-        NewsModel("","","Title1", "Date1","","Source1"),
-        NewsModel("","","Title2", "Date2","","Source2"),
-        NewsModel("","","Title3", "Date3","","Source3"),
-        NewsModel("","","Title1", "Date1","","Source1"),
-        NewsModel("","","Title2", "Date2","","Source2"),
-        NewsModel("","","Title3", "Date3","","Source3"),
-        NewsModel("","","Title1", "Date1","","Source1"),
-        NewsModel("","","Title2", "Date2","","Source2"),
-        NewsModel("","","Title3", "Date3","","Source3"),
-        NewsModel("","","Title1", "Date1","","Source1"),
-        NewsModel("","","Title2", "Date2","","Source2"),
-        NewsModel("","","Title3", "Date3","","Source3")
+    private var news: List<News> = arrayListOf(
+        News("","","Title1", "Date1","","Source1"),
+        News("","","Title2", "Date2","","Source2"),
+        News("","","Title3", "Date3","","Source3")
     )
 
     class NewsHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -41,7 +29,7 @@ class RecyclerNewsAdapter : RecyclerView.Adapter<RecyclerNewsAdapter.NewsHolder>
     }
 
     override fun onBindViewHolder(holder: NewsHolder, position: Int) {
-        val item: NewsModel = news[position]
+        val item: News = news[position]
 
         holder.title.text = item.title
         holder.source.text = item.source

@@ -16,9 +16,9 @@ class MainActivity : AppCompatActivity() {
         mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding?.root)
 
-        if (savedInstanceState != null) {
+        /*if (savedInstanceState != null) {
             return
-        }
+        }*/
 
         mainBinding?.let {
             val navHostFragment =
