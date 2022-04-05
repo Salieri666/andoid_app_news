@@ -5,13 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import ru.example.andoid_app_news.databinding.FragmentNewsBinding
+import ru.example.andoid_app_news.ui.tab.TabPagerAdapter
 
 class NewsFragment : Fragment() {
 
     private val sources: List<String> = arrayListOf("All news", "Lenta", "Russia 24", "FoxNews", "NewsSource1", "NewsSource2")
+    private var binding: FragmentNewsBinding? = null
+    private var tabLayoutMediator: TabLayoutMediator? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,28 +25,29 @@ class NewsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: FragmentNewsBinding = FragmentNewsBinding.inflate(inflater, container, false)
+        binding = FragmentNewsBinding.inflate(inflater, container, false)
 
-        val tabLayout: TabLayout = binding.tabLayout
-        val newsAdapter = RecyclerNewsAdapter()
+        binding?.let {
+            val tabLayout: TabLayout = it.tabLayout
+            val pager: ViewPager2 = it.pager
 
-        with(binding) {
-            recyclerNews.apply {
-                layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL ,false)
-                adapter = newsAdapter
+            pager.adapter = TabPagerAdapter(childFragmentManager, viewLifecycleOwner.lifecycle, sources)
+
+            tabLayoutMediator = TabLayoutMediator(tabLayout, pager) { tab, position ->
+                tab.text = sources[position]
             }
-
+            tabLayoutMediator?.attach()
         }
 
-        sources.forEach { el ->
-            val tab = tabLayout.newTab()
-            tab.text = el
-            tabLayout.addTab(tab)
-        }
-
-        return binding.root
+        return binding?.root
     }
 
+
+    override fun onDestroyView() {
+        tabLayoutMediator?.detach()
+        binding?.pager?.adapter = null
+        super.onDestroyView()
+    }
 
     companion object {
         @JvmStatic
