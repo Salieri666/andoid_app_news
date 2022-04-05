@@ -13,7 +13,7 @@ import ru.example.andoid_app_news.ui.tab.TabPagerAdapter
 
 class NewsFragment : Fragment() {
 
-    private val sources: List<String> = arrayListOf("All news", "Lenta", "Russia 24", "FoxNews", "NewsSource1", "NewsSource2")
+    private val sources: List<String> = arrayListOf("All news", "Lenta", "Russia 24", "FoxNews")
     private var binding: FragmentNewsBinding? = null
     private var tabLayoutMediator: TabLayoutMediator? = null
 
