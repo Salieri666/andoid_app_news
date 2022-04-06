@@ -33,7 +33,9 @@ class TabFragment : Fragment() {
         newsAdapter.setOnItemClickListener(object : RecyclerNewsAdapter.OnItemClickListener {
             override fun onClick(position: Int) {
                 val intent = Intent(requireContext(), NewsActivity::class.java)
-                intent.putExtra("position", position)
+
+                intent.putExtra(NewsActivity.NEWS_TITLE, "NEWS_TITLE_789")
+                intent.putExtra(NewsActivity.NEWS_DESCRIPTION, "NEWS_DESCRIPTION")
                 startActivity(intent)
             }
         })

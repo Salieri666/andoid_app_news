@@ -1,5 +1,6 @@
 package ru.example.andoid_app_news.ui.bookmarks
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.example.andoid_app_news.databinding.FragmentBookmarksBinding
 import ru.example.andoid_app_news.ui.news.RecyclerNewsAdapter
+import ru.example.andoid_app_news.ui.newsDescription.NewsActivity
 
 
 class BookmarksFragment : Fragment() {
@@ -22,6 +24,15 @@ class BookmarksFragment : Fragment() {
     ): View? {
         val binding: FragmentBookmarksBinding = FragmentBookmarksBinding.inflate(inflater, container, false)
         val newsAdapter = RecyclerNewsAdapter()
+        newsAdapter.setOnItemClickListener(object : RecyclerNewsAdapter.OnItemClickListener {
+            override fun onClick(position: Int) {
+                val intent = Intent(requireContext(), NewsActivity::class.java)
+
+                intent.putExtra(NewsActivity.NEWS_TITLE, "NEWS_TITLE_789")
+                intent.putExtra(NewsActivity.NEWS_DESCRIPTION, "NEWS_DESCRIPTION")
+                startActivity(intent)
+            }
+        })
 
         with(binding) {
             recyclerNews.apply {
@@ -35,7 +46,6 @@ class BookmarksFragment : Fragment() {
     }
 
     companion object {
-
         @JvmStatic
         fun newInstance() = BookmarksFragment()
     }
