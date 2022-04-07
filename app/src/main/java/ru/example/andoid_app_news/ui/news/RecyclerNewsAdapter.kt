@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.example.andoid_app_news.R
 import ru.example.andoid_app_news.model.News
 
-class RecyclerNewsAdapter() : RecyclerView.Adapter<RecyclerNewsAdapter.NewsHolder>()  {
+class RecyclerNewsAdapter : RecyclerView.Adapter<RecyclerNewsAdapter.NewsHolder>()  {
 
     interface OnItemClickListener {
         fun onClick(position: Int)
@@ -21,13 +21,7 @@ class RecyclerNewsAdapter() : RecyclerView.Adapter<RecyclerNewsAdapter.NewsHolde
     }
 
 
-    private var news: List<News> = arrayListOf(
-        News("","","Title1", "Date1","","Source1"),
-        News("","","Title2", "Date2","","Source2"),
-        News("","","Title3", "Date3","","Source3")
-    )
-
-
+    private var news: List<News> = ArrayList()
 
     class NewsHolder(itemView: View, listener: OnItemClickListener?) : RecyclerView.ViewHolder(itemView) {
         val title: TextView = itemView.findViewById(R.id.news_title)
@@ -57,5 +51,10 @@ class RecyclerNewsAdapter() : RecyclerView.Adapter<RecyclerNewsAdapter.NewsHolde
 
     override fun getItemCount(): Int {
         return news.size
+    }
+
+    fun refreshNews(news: List<News>) {
+        this.news = news
+        notifyItemInserted(news.size)
     }
 }

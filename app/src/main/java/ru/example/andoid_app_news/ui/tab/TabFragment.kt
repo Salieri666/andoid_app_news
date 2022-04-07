@@ -6,14 +6,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.example.andoid_app_news.databinding.FragmentTabBinding
 import ru.example.andoid_app_news.ui.news.RecyclerNewsAdapter
 import ru.example.andoid_app_news.ui.newsDescription.NewsActivity
+import ru.example.andoid_app_news.viewmodel.NewsViewModel
 
 private const val SOURCE = "SOURCE"
 
 class TabFragment : Fragment() {
+
+    private val newsViewModel: NewsViewModel by viewModels()
+
+    private var newsAdapter: RecyclerNewsAdapter? = null
+    private var binding: FragmentTabBinding? = null
     private var source: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,37 +34,43 @@ class TabFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding : FragmentTabBinding = FragmentTabBinding.inflate(inflater, container, false)
+        binding = FragmentTabBinding.inflate(inflater, container, false)
 
-        val newsAdapter = RecyclerNewsAdapter()
-        newsAdapter.setOnItemClickListener(object : RecyclerNewsAdapter.OnItemClickListener {
+        newsAdapter = RecyclerNewsAdapter()
+        newsAdapter?.setOnItemClickListener(object : RecyclerNewsAdapter.OnItemClickListener {
             override fun onClick(position: Int) {
                 val intent = Intent(requireContext(), NewsActivity::class.java)
-
-                intent.putExtra(NewsActivity.NEWS_TITLE, "NEWS_TITLE_789")
-                intent.putExtra(NewsActivity.NEWS_DESCRIPTION, "NEWS_DESCRIPTION")
+                intent.putExtra(NewsActivity.NEWS, newsViewModel.newsList.value?.get(position))
                 startActivity(intent)
             }
         })
 
-        with(binding) {
-            recyclerNewsTab.apply {
-                layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL ,false)
+        binding?.let {
+            it.recyclerNewsTab.apply {
+                layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
                 adapter = newsAdapter
             }
         }
 
+        return binding?.root
+    }
 
-        return binding.root
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        newsViewModel.newsList.observe(viewLifecycleOwner) {
+            it?.let {
+                newsAdapter?.refreshNews(it)
+            }
+        }
     }
 
     companion object {
 
         @JvmStatic
-        fun newInstance(param1: String) =
+        fun newInstance(source: String) =
             TabFragment().apply {
                 arguments = Bundle().apply {
-                    putString(SOURCE, param1)
+                    putString(SOURCE, source)
                 }
             }
     }

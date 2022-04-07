@@ -3,11 +3,13 @@ package ru.example.andoid_app_news.ui.newsDescription
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import ru.example.andoid_app_news.databinding.ActivityNewsBinding
+import ru.example.andoid_app_news.model.News
 
 
 class NewsActivity : AppCompatActivity() {
 
     private var newsBinding: ActivityNewsBinding? = null
+    private var newsItem: News? =  null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,14 +20,14 @@ class NewsActivity : AppCompatActivity() {
 
         setContentView(newsBinding?.root)
 
-        savedInstanceState?.let {
-            newsBinding?.newsTitleCommon?.text = it.getString(NEWS_TITLE)
-            newsBinding?.newsDescription?.text = it.getString(NEWS_DESCRIPTION)
+        newsBinding?.let {
+            newsItem = intent.extras?.getParcelable(NEWS)
+            newsBinding?.newsTitleCommon?.text = newsItem?.title
+            newsBinding?.newsDescription?.text = newsItem?.description
         }
     }
 
     companion object {
-        const val NEWS_TITLE = "NEWS_TITLE"
-        const val NEWS_DESCRIPTION = "NEWS_DESCRIPTION"
+        const val NEWS = "NEWS"
     }
 }

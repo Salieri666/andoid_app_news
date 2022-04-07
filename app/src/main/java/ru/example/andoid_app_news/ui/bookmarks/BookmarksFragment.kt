@@ -6,13 +6,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.example.andoid_app_news.databinding.FragmentBookmarksBinding
 import ru.example.andoid_app_news.ui.news.RecyclerNewsAdapter
 import ru.example.andoid_app_news.ui.newsDescription.NewsActivity
+import ru.example.andoid_app_news.viewmodel.NewsViewModel
 
 
 class BookmarksFragment : Fragment() {
+
+    private var newsAdapter: RecyclerNewsAdapter? = null
+    private var binding: FragmentBookmarksBinding? = null
+
+    private val newsViewModel: NewsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,27 +29,35 @@ class BookmarksFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: FragmentBookmarksBinding = FragmentBookmarksBinding.inflate(inflater, container, false)
-        val newsAdapter = RecyclerNewsAdapter()
-        newsAdapter.setOnItemClickListener(object : RecyclerNewsAdapter.OnItemClickListener {
+        binding = FragmentBookmarksBinding.inflate(inflater, container, false)
+
+        newsAdapter = RecyclerNewsAdapter()
+        newsAdapter?.setOnItemClickListener(object : RecyclerNewsAdapter.OnItemClickListener {
             override fun onClick(position: Int) {
                 val intent = Intent(requireContext(), NewsActivity::class.java)
-
-                intent.putExtra(NewsActivity.NEWS_TITLE, "NEWS_TITLE_789")
-                intent.putExtra(NewsActivity.NEWS_DESCRIPTION, "NEWS_DESCRIPTION")
+                intent.putExtra(NewsActivity.NEWS, newsViewModel.newsList.value?.get(position))
                 startActivity(intent)
             }
         })
 
-        with(binding) {
-            recyclerNews.apply {
+        binding?.let{
+            it.recyclerNews.apply {
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL ,false)
                 adapter = newsAdapter
             }
 
         }
 
-        return binding.root
+        return binding?.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        newsViewModel.newsList.observe(viewLifecycleOwner) {
+            it?.let {
+                newsAdapter?.refreshNews(it)
+            }
+        }
     }
 
     companion object {
