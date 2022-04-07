@@ -30,7 +30,26 @@ class BookmarksFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentBookmarksBinding.inflate(inflater, container, false)
+        setupRecycler()
+        return binding?.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        newsViewModel.newsList.observe(viewLifecycleOwner) {
+            it?.let {
+                newsAdapter?.refreshNews(it)
+            }
+        }
+    }
+
+
+    companion object {
+        @JvmStatic
+        fun newInstance() = BookmarksFragment()
+    }
+
+    private fun setupRecycler() {
         newsAdapter = RecyclerNewsAdapter()
         newsAdapter?.setOnItemClickListener(object : RecyclerNewsAdapter.OnItemClickListener {
             override fun onClick(position: Int) {
@@ -47,21 +66,5 @@ class BookmarksFragment : Fragment() {
             }
 
         }
-
-        return binding?.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        newsViewModel.newsList.observe(viewLifecycleOwner) {
-            it?.let {
-                newsAdapter?.refreshNews(it)
-            }
-        }
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance() = BookmarksFragment()
     }
 }

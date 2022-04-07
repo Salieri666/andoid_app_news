@@ -36,6 +36,31 @@ class TabFragment : Fragment() {
     ): View? {
         binding = FragmentTabBinding.inflate(inflater, container, false)
 
+        setupRecycler()
+
+        return binding?.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        newsViewModel.newsList.observe(viewLifecycleOwner) {
+            it?.let {
+                newsAdapter?.refreshNews(it)
+            }
+        }
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance(source: String) =
+            TabFragment().apply {
+                arguments = Bundle().apply {
+                    putString(SOURCE, source)
+                }
+            }
+    }
+
+    private fun setupRecycler() {
         newsAdapter = RecyclerNewsAdapter()
         newsAdapter?.setOnItemClickListener(object : RecyclerNewsAdapter.OnItemClickListener {
             override fun onClick(position: Int) {
@@ -51,27 +76,6 @@ class TabFragment : Fragment() {
                 adapter = newsAdapter
             }
         }
-
-        return binding?.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        newsViewModel.newsList.observe(viewLifecycleOwner) {
-            it?.let {
-                newsAdapter?.refreshNews(it)
-            }
-        }
-    }
-
-    companion object {
-
-        @JvmStatic
-        fun newInstance(source: String) =
-            TabFragment().apply {
-                arguments = Bundle().apply {
-                    putString(SOURCE, source)
-                }
-            }
-    }
 }
