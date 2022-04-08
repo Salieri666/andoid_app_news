@@ -41,6 +41,7 @@ class BookmarksFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         newsViewModel.allBookmarks.observe(viewLifecycleOwner) {
             it?.let {
                 newsAdapter?.refreshNews(it)
@@ -65,6 +66,7 @@ class BookmarksFragment : Fragment() {
                 val intent = Intent(requireContext(), NewsActivity::class.java)
                 intent.putExtra(NewsActivity.NEWS, newsViewModel.allBookmarks.value?.get(position))
                 startActivity(intent)
+                //newsAdapter?.notifyItemChanged(position)
             }
         })
 

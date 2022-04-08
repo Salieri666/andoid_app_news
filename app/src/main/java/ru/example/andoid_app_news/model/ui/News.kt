@@ -6,7 +6,7 @@ import ru.example.andoid_app_news.model.data.BookmarkEntity
 
 @Parcelize
 data class News(
-    val id: Int?,
+    val id: Int? ,
     var url: String,
     var description: String?,
     var title: String?,
@@ -14,6 +14,8 @@ data class News(
     var img: String?,
     var source: String?
 ) : Parcelable {
+
+    constructor() : this(null, "", null, null, null, null, null)
 
     companion object {
         fun toNews(entity: BookmarkEntity): News {

@@ -9,10 +9,18 @@ class BookmarksRepo(private val bookmarksDao: BookmarksDao) {
 
     val allBookmarks: Flow<List<BookmarkEntity>> = bookmarksDao.getBookmarks()
 
+    fun getByUrl(url: String): Flow<BookmarkEntity?> {
+        return bookmarksDao.getBookmark(url)
+    }
+
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
     suspend fun insert(bookmark: BookmarkEntity) {
         bookmarksDao.insert(bookmark)
     }
 
+    @WorkerThread
+    suspend fun delete(id: Int) {
+        bookmarksDao.deleteById(id)
+    }
 }

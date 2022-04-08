@@ -7,10 +7,6 @@ import ru.example.andoid_app_news.repository.BookmarksRepo
 
 class BookmarksService(private val bookmarksRepo: BookmarksRepo) {
 
-    suspend fun add(news: News) {
-        bookmarksRepo.insert(News.toEntity(news))
-    }
-
     fun getAll() : Flow<List<News>>  {
         return bookmarksRepo.allBookmarks.map { list ->
             list.map {
@@ -19,5 +15,17 @@ class BookmarksService(private val bookmarksRepo: BookmarksRepo) {
         }
     }
 
-    suspend fun remove(news: News) {}
+    fun getByUrl(url : String): Flow<News> {
+        return bookmarksRepo.getByUrl(url).map {
+            if (it != null) News.toNews(it) else News()
+        }
+    }
+
+    suspend fun add(news: News) {
+        bookmarksRepo.insert(News.toEntity(news))
+    }
+
+    suspend fun remove(id: Int) {
+        bookmarksRepo.delete(id)
+    }
 }

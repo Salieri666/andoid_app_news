@@ -12,9 +12,12 @@ interface BookmarksDao {
     @Query("SELECT * FROM bookmark ORDER BY created_date DESC")
     fun getBookmarks(): Flow<List<BookmarkEntity>>
 
+    @Query("SELECT * FROM bookmark WHERE url = :url Limit 1")
+    fun getBookmark(url: String): Flow<BookmarkEntity?>
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(bookmark: BookmarkEntity)
 
-    @Query("DELETE FROM bookmark where id = :id")
-    suspend fun deleteById(id: Long)
+    @Query("DELETE FROM bookmark where id = :id1")
+    suspend fun deleteById(id1: Int)
 }

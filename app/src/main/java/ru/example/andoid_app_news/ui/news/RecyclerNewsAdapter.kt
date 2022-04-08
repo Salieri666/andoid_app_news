@@ -54,6 +54,6 @@ class RecyclerNewsAdapter : RecyclerView.Adapter<RecyclerNewsAdapter.NewsHolder>
 
     fun refreshNews(news: List<News>) {
         this.news = news
-        notifyItemInserted(news.size)
+        notifyDataSetChanged()
     }
 }
