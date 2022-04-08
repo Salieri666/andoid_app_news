@@ -20,7 +20,6 @@ class RecyclerNewsAdapter : RecyclerView.Adapter<RecyclerNewsAdapter.NewsHolder>
         mListener = listener
     }
 
-
     private var news: List<News> = ArrayList()
 
     class NewsHolder(itemView: View, listener: OnItemClickListener?) : RecyclerView.ViewHolder(itemView) {

@@ -8,8 +8,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import ru.example.andoid_app_news.MainApplication
 import ru.example.andoid_app_news.databinding.FragmentBookmarksBinding
-import ru.example.andoid_app_news.model.viewmodel.NewsViewModel
+import ru.example.andoid_app_news.model.viewmodel.BookmarksViewModel
+import ru.example.andoid_app_news.model.viewmodel.BookmarksViewModelFactory
+import ru.example.andoid_app_news.service.BookmarksService
 import ru.example.andoid_app_news.ui.news.RecyclerNewsAdapter
 import ru.example.andoid_app_news.ui.newsDescription.NewsActivity
 
@@ -19,7 +22,9 @@ class BookmarksFragment : Fragment() {
     private var newsAdapter: RecyclerNewsAdapter? = null
     private var binding: FragmentBookmarksBinding? = null
 
-    private val newsViewModel: NewsViewModel by viewModels()
+    private val newsViewModel: BookmarksViewModel by viewModels {
+        BookmarksViewModelFactory(BookmarksService((activity?.application as MainApplication).bookmarksRepo))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +41,7 @@ class BookmarksFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        newsViewModel.newsList.observe(viewLifecycleOwner) {
+        newsViewModel.allBookmarks.observe(viewLifecycleOwner) {
             it?.let {
                 newsAdapter?.refreshNews(it)
             }
@@ -45,7 +50,7 @@ class BookmarksFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        newsViewModel.newsList.removeObservers(viewLifecycleOwner)
+        newsViewModel.allBookmarks.removeObservers(viewLifecycleOwner)
     }
 
     companion object {
@@ -58,7 +63,7 @@ class BookmarksFragment : Fragment() {
         newsAdapter?.setOnItemClickListener(object : RecyclerNewsAdapter.OnItemClickListener {
             override fun onClick(position: Int) {
                 val intent = Intent(requireContext(), NewsActivity::class.java)
-                intent.putExtra(NewsActivity.NEWS, newsViewModel.newsList.value?.get(position))
+                intent.putExtra(NewsActivity.NEWS, newsViewModel.allBookmarks.value?.get(position))
                 startActivity(intent)
             }
         })
