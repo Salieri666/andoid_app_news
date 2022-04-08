@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.example.andoid_app_news.R
-import ru.example.andoid_app_news.model.News
+import ru.example.andoid_app_news.model.ui.News
 
 class RecyclerNewsAdapter : RecyclerView.Adapter<RecyclerNewsAdapter.NewsHolder>()  {
 

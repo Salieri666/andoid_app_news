@@ -9,9 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.example.andoid_app_news.databinding.FragmentBookmarksBinding
+import ru.example.andoid_app_news.model.viewmodel.NewsViewModel
 import ru.example.andoid_app_news.ui.news.RecyclerNewsAdapter
 import ru.example.andoid_app_news.ui.newsDescription.NewsActivity
-import ru.example.andoid_app_news.viewmodel.NewsViewModel
 
 
 class BookmarksFragment : Fragment() {
@@ -43,6 +43,10 @@ class BookmarksFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        newsViewModel.newsList.removeObservers(viewLifecycleOwner)
+    }
 
     companion object {
         @JvmStatic

@@ -9,9 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.example.andoid_app_news.databinding.FragmentTabBinding
+import ru.example.andoid_app_news.model.viewmodel.NewsViewModel
 import ru.example.andoid_app_news.ui.news.RecyclerNewsAdapter
 import ru.example.andoid_app_news.ui.newsDescription.NewsActivity
-import ru.example.andoid_app_news.viewmodel.NewsViewModel
 
 private const val SOURCE = "SOURCE"
 
@@ -48,6 +48,11 @@ class TabFragment : Fragment() {
                 newsAdapter?.refreshNews(it)
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        newsViewModel.newsList.removeObservers(viewLifecycleOwner)
     }
 
     companion object {

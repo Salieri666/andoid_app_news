@@ -1,4 +1,4 @@
-package ru.example.andoid_app_news.model
+package ru.example.andoid_app_news.model.ui
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

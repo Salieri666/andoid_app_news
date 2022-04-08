@@ -1,6 +1,6 @@
 package ru.example.andoid_app_news.samples
 
-import ru.example.andoid_app_news.model.News
+import ru.example.andoid_app_news.model.ui.News
 
 object NewsSamples {
     fun getNews() = listOf(

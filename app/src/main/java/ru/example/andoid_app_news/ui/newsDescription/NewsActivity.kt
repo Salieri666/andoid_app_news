@@ -3,7 +3,7 @@ package ru.example.andoid_app_news.ui.newsDescription
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import ru.example.andoid_app_news.databinding.ActivityNewsBinding
-import ru.example.andoid_app_news.model.News
+import ru.example.andoid_app_news.model.ui.News
 
 
 class NewsActivity : AppCompatActivity() {
