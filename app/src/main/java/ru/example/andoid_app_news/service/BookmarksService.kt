@@ -22,7 +22,7 @@ class BookmarksService(private val bookmarksRepo: BookmarksRepo) {
     }
 
     suspend fun add(news: News) {
-        bookmarksRepo.insert(News.toEntity(news))
+        bookmarksRepo.insert(News.toEntity(news, System.currentTimeMillis()))
     }
 
     suspend fun remove(id: Int) {

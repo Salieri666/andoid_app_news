@@ -8,8 +8,8 @@ import ru.example.andoid_app_news.model.data.BookmarkEntity
 data class News(
     val id: Int? ,
     var url: String,
-    var description: String?,
     var title: String?,
+    var description: String?,
     var date: String?,
     var img: String?,
     var source: String?
@@ -22,24 +22,24 @@ data class News(
             return News(
                 entity.id,
                 entity.url,
-                entity.description,
                 entity.title,
+                entity.description,
                 entity.sourceDate,
                 entity.img,
                 entity.source
             )
         }
 
-        fun toEntity(news: News): BookmarkEntity {
+        fun toEntity(news: News, createdDate: Long): BookmarkEntity {
             return BookmarkEntity(
                 null,
                 news.url,
-                news.description,
                 news.title,
+                news.description,
                 news.img,
                 news.source,
                 news.date,
-                null
+                createdDate
             )
         }
     }

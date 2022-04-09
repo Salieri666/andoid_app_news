@@ -44,7 +44,7 @@ class BookmarksFragment : Fragment() {
 
         newsViewModel.allBookmarks.observe(viewLifecycleOwner) {
             it?.let {
-                newsAdapter?.refreshNews(it)
+                newsAdapter?.submitList(it)
             }
         }
     }
@@ -66,7 +66,6 @@ class BookmarksFragment : Fragment() {
                 val intent = Intent(requireContext(), NewsActivity::class.java)
                 intent.putExtra(NewsActivity.NEWS, newsViewModel.allBookmarks.value?.get(position))
                 startActivity(intent)
-                //newsAdapter?.notifyItemChanged(position)
             }
         })
 

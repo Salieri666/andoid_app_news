@@ -45,7 +45,7 @@ class TabFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         newsViewModel.newsList.observe(viewLifecycleOwner) {
             it?.let {
-                newsAdapter?.refreshNews(it)
+                newsAdapter?.submitList(it)
             }
         }
     }

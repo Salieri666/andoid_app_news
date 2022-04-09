@@ -25,8 +25,8 @@
 
     <TextView
         android:id="@+id/news_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="16dp"
         android:layout_margin="10dp"
         android:text="28 September 2022"
         android:textSize="12sp"
@@ -36,9 +36,10 @@
 
     <TextView
         android:id="@+id/news_source"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="16dp"
         android:layout_margin="10dp"
+        android:gravity="end"
         android:text="Lenta.ru"
         android:textColor="@color/news_subtitle_color"
         android:textSize="12sp"
