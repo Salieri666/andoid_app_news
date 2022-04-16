@@ -18,6 +18,6 @@ data class BookmarkEntity(
     @ColumnInfo(name = "description") val description: String?,
     @ColumnInfo(name = "img") val img: String?,
     @ColumnInfo(name = "source") val source: String?,
-    @ColumnInfo(name = "source_date") val sourceDate: String?,
+    @ColumnInfo(name = "source_date") val sourceDate: Long?,
     @ColumnInfo(name = "created_date") val createdDate: Long?
 )

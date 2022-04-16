@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import com.squareup.picasso.Picasso
 import ru.example.andoid_app_news.MainApplication
 import ru.example.andoid_app_news.R
 import ru.example.andoid_app_news.databinding.ActivityNewsBinding
@@ -41,8 +42,14 @@ class NewsActivity : AppCompatActivity() {
         }
         newsBinding?.let {
             newsItem = intent.extras?.getParcelable(NEWS)
-            newsBinding?.newsTitleCommon?.text = newsItem?.title
-            newsBinding?.newsDescription?.text = newsItem?.description
+            it.newsTitleCommon.text = newsItem?.title
+            it.newsDescription.text = newsItem?.description
+
+            if (newsItem?.img == null)
+                it.imageNews.visibility = View.GONE
+            else {
+                Picasso.get().load(newsItem?.img).into(it.imageNews)
+            }
         }
 
         newsItem?.let { _newsItem ->

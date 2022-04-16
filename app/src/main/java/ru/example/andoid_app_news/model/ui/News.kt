@@ -12,10 +12,11 @@ data class News(
     var description: String?,
     var date: String?,
     var img: String?,
-    var source: String?
+    var source: String?,
+    var sourceDate: Long?
 ) : Parcelable {
 
-    constructor() : this(null, "", null, null, null, null, null)
+    constructor() : this(null, "", null, null, null, null, null, null)
 
     companion object {
         fun toNews(entity: BookmarkEntity): News {
@@ -24,9 +25,10 @@ data class News(
                 entity.url,
                 entity.title,
                 entity.description,
-                entity.sourceDate,
+                entity.sourceDate.toString(),
                 entity.img,
-                entity.source
+                entity.source,
+                entity.sourceDate
             )
         }
 
@@ -38,7 +40,7 @@ data class News(
                 news.description,
                 news.img,
                 news.source,
-                news.date,
+                news.sourceDate,
                 createdDate
             )
         }

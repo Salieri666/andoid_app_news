@@ -3,11 +3,13 @@ package ru.example.andoid_app_news.ui.news
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import ru.example.andoid_app_news.R
 import ru.example.andoid_app_news.model.ui.News
 
@@ -23,8 +25,6 @@ class RecyclerNewsAdapter : ListAdapter<News, RecyclerNewsAdapter.NewsHolder>(As
         mListener = listener
     }
 
-    //var news: List<News> = ArrayList()
-
     private class DiffCallback : DiffUtil.ItemCallback<News>() {
 
         override fun areItemsTheSame(oldItem: News, newItem: News): Boolean =
@@ -39,6 +39,7 @@ class RecyclerNewsAdapter : ListAdapter<News, RecyclerNewsAdapter.NewsHolder>(As
         val title: TextView = itemView.findViewById(R.id.news_title)
         val source: TextView = itemView.findViewById(R.id.news_source)
         val date: TextView = itemView.findViewById(R.id.news_date)
+        val imgView: ImageView = itemView.findViewById(R.id.newsImageView)
 
         init {
             itemView.setOnClickListener {
@@ -59,8 +60,12 @@ class RecyclerNewsAdapter : ListAdapter<News, RecyclerNewsAdapter.NewsHolder>(As
         holder.title.text = item.title
         holder.source.text = item.source
         holder.date.text = item.date
+
+        if (item.img == null)
+            holder.imgView.visibility = View.GONE
+        else {
+            Picasso.get().load(item.img).into(holder.imgView)
+        }
     }
-
-
 
 }

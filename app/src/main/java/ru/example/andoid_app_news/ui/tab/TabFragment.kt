@@ -8,8 +8,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import ru.example.andoid_app_news.MainApplication
 import ru.example.andoid_app_news.databinding.FragmentTabBinding
 import ru.example.andoid_app_news.model.viewmodel.NewsViewModel
+import ru.example.andoid_app_news.model.viewmodel.NewsViewModelFactory
+import ru.example.andoid_app_news.repository.NewsRepo
 import ru.example.andoid_app_news.ui.news.RecyclerNewsAdapter
 import ru.example.andoid_app_news.ui.newsDescription.NewsActivity
 
@@ -17,7 +20,9 @@ private const val SOURCE = "SOURCE"
 
 class TabFragment : Fragment() {
 
-    private val newsViewModel: NewsViewModel by viewModels()
+    private val newsViewModel: NewsViewModel by viewModels {
+        NewsViewModelFactory(NewsRepo((activity?.application as MainApplication).httpClient), source?: "")
+    }
 
     private var newsAdapter: RecyclerNewsAdapter? = null
     private var binding: FragmentTabBinding? = null
@@ -43,9 +48,11 @@ class TabFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        newsViewModel.newsList.observe(viewLifecycleOwner) {
-            it?.let {
-                newsAdapter?.submitList(it)
+        source?.let {
+            newsViewModel.newsList.observe(viewLifecycleOwner) {
+                it?.let {
+                    newsAdapter?.submitList(it)
+                }
             }
         }
     }
