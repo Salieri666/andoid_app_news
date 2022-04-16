@@ -37,6 +37,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/arrowBack" />
 
+    <TextView
+        android:id="@+id/news_date_activity"
+        android:layout_width="150dp"
+        android:layout_height="16dp"
+        android:layout_margin="10dp"
+        android:text="28 September 2022"
+        android:textColor="@color/news_subtitle_color"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/newsTitleCommon" />
+
+    <TextView
+        android:id="@+id/news_source_activity"
+        android:layout_width="100dp"
+        android:layout_height="16dp"
+        android:layout_margin="10dp"
+        android:gravity="end"
+        android:text="Lenta.ru"
+        android:textColor="@color/news_subtitle_color"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/newsTitleCommon" />
+
     <ImageView
         android:id="@+id/imageNews"
         android:layout_width="match_parent"
@@ -44,7 +67,7 @@
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/newsTitleCommon"
+        app:layout_constraintTop_toBottomOf="@+id/news_date_activity"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
     <TextView

@@ -44,6 +44,8 @@ class NewsActivity : AppCompatActivity() {
             newsItem = intent.extras?.getParcelable(NEWS)
             it.newsTitleCommon.text = newsItem?.title
             it.newsDescription.text = newsItem?.description
+            it.newsDateActivity.text = newsItem?.date
+            it.newsSourceActivity.text = newsItem?.source
 
             if (newsItem?.img == null)
                 it.imageNews.visibility = View.GONE

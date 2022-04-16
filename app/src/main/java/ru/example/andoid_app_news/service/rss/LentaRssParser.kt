@@ -7,6 +7,8 @@ import ru.example.andoid_app_news.model.data.Channel
 import ru.example.andoid_app_news.model.ui.News
 import java.io.IOException
 import java.io.InputStream
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class LentaRssParser {
@@ -94,8 +96,13 @@ class LentaRssParser {
                 else -> skip(parser)
             }
         }
+        val sdf = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z")
+        val sourceDate = ZonedDateTime.parse(pubDate, sdf)
 
-        return News(null, link?: UUID.randomUUID().toString(), title, description, pubDate, img, "Lenta.ru", 0)
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(TimeZone.getDefault().toZoneId())
+        val timeString = sourceDate.format(formatter)
+
+        return News(null, link?: UUID.randomUUID().toString(), title, description, timeString, img, "Lenta.ru", sourceDate.toInstant().toEpochMilli())
     }
 
 

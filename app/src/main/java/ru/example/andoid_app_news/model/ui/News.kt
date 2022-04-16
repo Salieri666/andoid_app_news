@@ -3,6 +3,10 @@ package ru.example.andoid_app_news.model.ui
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import ru.example.andoid_app_news.model.data.BookmarkEntity
+import java.time.Instant
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 @Parcelize
 data class News(
@@ -20,12 +24,16 @@ data class News(
 
     companion object {
         fun toNews(entity: BookmarkEntity): News {
+
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            val timeString = ZonedDateTime.ofInstant(Instant.ofEpochSecond(((entity.sourceDate?:0) / 1000)), TimeZone.getDefault().toZoneId()).format(formatter)
+
             return News(
                 entity.id,
                 entity.url,
                 entity.title,
                 entity.description,
-                entity.sourceDate.toString(),
+                timeString,
                 entity.img,
                 entity.source,
                 entity.sourceDate
