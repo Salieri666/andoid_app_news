@@ -71,6 +71,7 @@ class TabFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         newsViewModel.newsList.removeObservers(viewLifecycleOwner)
+        newsViewModel.isLoading.removeObservers(viewLifecycleOwner)
     }
 
     companion object {
