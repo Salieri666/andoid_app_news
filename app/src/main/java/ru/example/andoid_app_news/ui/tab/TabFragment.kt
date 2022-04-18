@@ -27,6 +27,7 @@ class TabFragment : Fragment() {
     private var newsAdapter: RecyclerNewsAdapter? = null
     private var binding: FragmentTabBinding? = null
     private var source: String? = null
+    private var loadingDialog: LoadingDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,16 +44,26 @@ class TabFragment : Fragment() {
 
         setupRecycler()
 
+        loadingDialog = LoadingDialog(inflater, context, container)
+        loadingDialog?.show()
+
         return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         source?.let {
             newsViewModel.newsList.observe(viewLifecycleOwner) {
                 it?.let {
                     newsAdapter?.submitList(it)
                 }
+            }
+        }
+
+        newsViewModel.isLoading.observe(viewLifecycleOwner) {
+            if (!it) {
+                loadingDialog?.close()
             }
         }
     }

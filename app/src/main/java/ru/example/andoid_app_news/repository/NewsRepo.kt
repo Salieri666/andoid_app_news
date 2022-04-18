@@ -10,7 +10,7 @@ import java.io.IOException
 
 class NewsRepo(private val client: OkHttpClient) {
 
-    private fun getAllNews(): MutableLiveData<List<News>> {
+    private fun getAllNews(isLoading: MutableLiveData<Boolean>): MutableLiveData<List<News>> {
         val news = MutableLiveData<List<News>>(emptyList())
 
         val request = Request.Builder()
@@ -32,6 +32,7 @@ class NewsRepo(private val client: OkHttpClient) {
 
                     result.items?.let {
                         news.postValue(it)
+                        isLoading.postValue(false)
                     }
                 }
             }
@@ -39,10 +40,10 @@ class NewsRepo(private val client: OkHttpClient) {
         return news
     }
 
-    fun getNewsBySource(source: String): MutableLiveData<List<News>> {
+    fun getNewsBySource(source: String, isLoading: MutableLiveData<Boolean>): MutableLiveData<List<News>> {
         return when (source) {
-            "All" -> getAllNews()
-            "Lenta" -> getAllNews()
+            "All" -> getAllNews(isLoading)
+            "Lenta" -> getAllNews(isLoading)
             else -> MutableLiveData()
         }
     }

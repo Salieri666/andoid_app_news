@@ -9,16 +9,19 @@ import ru.example.andoid_app_news.repository.NewsRepo
 
 class NewsViewModel(private val newsRepo: NewsRepo, private val source: String) : ViewModel() {
 
+    private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(true)
+
+    val isLoading: LiveData<Boolean>
+        get() = _isLoading
+
     private val _newsList : MutableLiveData<List<News>> by lazy {
-        newsRepo.getNewsBySource(source)
+        newsRepo.getNewsBySource(source, _isLoading)
     }
 
 
     val newsList: LiveData<List<News>>
         get() = _newsList
 
-
-    //fun newsList(source: String) : MutableLiveData<List<News>> = newsRepo.getNewsBySource(source)
 }
 
 class NewsViewModelFactory(private val newsRepo: NewsRepo, private val source: String) : ViewModelProvider.Factory {
