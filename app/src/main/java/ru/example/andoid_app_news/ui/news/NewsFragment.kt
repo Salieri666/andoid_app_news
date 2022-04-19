@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -31,10 +32,22 @@ class NewsFragment : Fragment() {
             val tabLayout: TabLayout = it.tabLayout
             val pager: ViewPager2 = it.pager
 
-            pager.adapter = TabPagerAdapter(childFragmentManager, viewLifecycleOwner.lifecycle, sources)
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
+            val checkedSources = mutableListOf<String>()
+            sources.forEach { el ->
+                if (el == "All") {
+                    checkedSources.add(el)
+                } else {
+                    if (sharedPref != null && sharedPref.getBoolean(el, false)) {
+                        checkedSources.add(el)
+                    }
+                }
+            }
+
+            pager.adapter = TabPagerAdapter(childFragmentManager, viewLifecycleOwner.lifecycle, checkedSources)
 
             tabLayoutMediator = TabLayoutMediator(tabLayout, pager) { tab, position ->
-                tab.text = sources[position]
+                tab.text = checkedSources[position]
             }
             tabLayoutMediator?.attach()
         }

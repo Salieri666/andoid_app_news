@@ -43,15 +43,15 @@ class TabFragment : Fragment() {
         binding = FragmentTabBinding.inflate(inflater, container, false)
 
         setupRecycler()
-
         loadingDialog = LoadingDialog(inflater, context, container)
-        loadingDialog?.show()
 
         return binding?.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+
+    override fun onResume() {
+        super.onResume()
+        loadingDialog?.show()
 
         source?.let {
             newsViewModel.newsList.observe(viewLifecycleOwner) {

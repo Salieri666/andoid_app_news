@@ -1,34 +1,44 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory app:title="@string/messages_header">
 
-        <EditTextPreference
-            app:key="signature"
+        <PreferenceScreen
+            app:allowDividerBelow="true"
+            app:key="screen_profile_preferences"
+            app:summary="Not logged in"
             app:title="@string/signature_title"
-            app:useSimpleSummaryProvider="true" />
+            app:useSimpleSummaryProvider="true">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:targetClass="ru.example.andoid_app_news.ui.newsDescription.NewsActivity"
+                android:targetPackage="ru.example.andoid_app_news" />
 
-        <ListPreference
-            app:defaultValue="reply"
-            app:entries="@array/reply_entries"
-            app:entryValues="@array/reply_values"
-            app:key="reply"
-            app:title="@string/reply_title"
-            app:useSimpleSummaryProvider="true" />
+        </PreferenceScreen>
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/sync_header">
+
+    <PreferenceScreen
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="true"
+        app:key="screen_map_preferences"
+        app:title="Map"
+        app:useSimpleSummaryProvider="true">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="ru.example.andoid_app_news.ui.newsDescription.NewsActivity"
+            android:targetPackage="ru.example.andoid_app_news" />
+
+    </PreferenceScreen>
+
+    <PreferenceCategory app:title="@string/news_sources">
 
         <SwitchPreferenceCompat
-            app:key="sync"
-            app:title="@string/sync_title" />
+            app:key="Lenta"
+            android:defaultValue="true"
+            app:title="@string/lenta_title" />
 
-        <SwitchPreferenceCompat
-            app:dependency="sync"
-            app:key="attachment"
-            app:summaryOff="@string/attachment_summary_off"
-            app:summaryOn="@string/attachment_summary_on"
-            app:title="@string/attachment_title" />
 
     </PreferenceCategory>
 
