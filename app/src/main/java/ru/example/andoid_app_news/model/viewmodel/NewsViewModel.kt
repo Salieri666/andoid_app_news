@@ -14,7 +14,11 @@ class NewsViewModel(private val newsRepo: NewsRepo, private val source: String) 
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
-    private val _newsList : MutableLiveData<List<News>> by lazy {
+    private val _newsList : LiveData<List<News>> by lazy {
+        /*liveData {
+            emit(newsRepo.getLentaNews()?: emptyList())
+            _isLoading.postValue(false)
+        }*/
         newsRepo.getNewsBySource(source, _isLoading)
     }
 

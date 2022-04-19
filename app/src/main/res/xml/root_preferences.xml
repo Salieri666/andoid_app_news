@@ -11,7 +11,7 @@
             app:useSimpleSummaryProvider="true">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:targetClass="ru.example.andoid_app_news.ui.newsDescription.NewsActivity"
+                android:targetClass="ru.example.andoid_app_news.ui.profile.ProfileActivity"
                 android:targetPackage="ru.example.andoid_app_news" />
 
         </PreferenceScreen>
