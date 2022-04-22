@@ -70,6 +70,7 @@ class ProfileActivity : AppCompatActivity() {
                                 toast.show()
                         }
                     }
+                    profileViewModel.authUser(AuthDto(login, pass), false).removeObservers(this)
                 }
             } else if (profileViewModel.isRegister.value!!) {
                 profileViewModel.authUser(AuthDto(login, pass), true).observe(this) {
@@ -80,6 +81,7 @@ class ProfileActivity : AppCompatActivity() {
                             toast.show()
                         }
                     }
+                    profileViewModel.authUser(AuthDto(login, pass), false).removeObservers(this)
                 }
             }
         }
