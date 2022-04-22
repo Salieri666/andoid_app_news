@@ -25,7 +25,7 @@ data class News(
     companion object {
         fun toNews(entity: BookmarkEntity): News {
 
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+            val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss")
             val timeString = ZonedDateTime.ofInstant(Instant.ofEpochSecond(((entity.sourceDate?:0) / 1000)), TimeZone.getDefault().toZoneId()).format(formatter)
 
             return News(
