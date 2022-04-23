@@ -39,6 +39,11 @@
             android:defaultValue="true"
             app:title="@string/lenta_title" />
 
+        <SwitchPreferenceCompat
+            app:key="Rbc"
+            android:defaultValue="true"
+            app:title="@string/rbc_title" />
+
 
     </PreferenceCategory>
 

@@ -1,38 +1,52 @@
 package ru.example.andoid_app_news.model.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
+import kotlinx.coroutines.launch
 import ru.example.andoid_app_news.model.ui.News
-import ru.example.andoid_app_news.repository.NewsRepo
+import ru.example.andoid_app_news.useCase.NewsUseCase
 
-class NewsViewModel(private val newsRepo: NewsRepo, private val source: String) : ViewModel() {
+class NewsViewModel(private val newsUseCase: NewsUseCase,
+                    private val source: String) : ViewModel() {
 
     private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(true)
 
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
-    private val _newsList : LiveData<List<News>> by lazy {
-        /*liveData {
-            emit(newsRepo.getLentaNews()?: emptyList())
-            _isLoading.postValue(false)
-        }*/
-        newsRepo.getNewsBySource(source, _isLoading)
+    private val _news: MutableLiveData<List<News>> = MutableLiveData(emptyList())
+
+    val news: LiveData<List<News>>
+        get() = _news
+
+
+    private suspend fun change(source: String) : List<News> {
+        return when(source) {
+            "All" -> newsUseCase.getAllNews()
+            "Lenta" -> newsUseCase.getLentaNews()
+            "Rbc" -> newsUseCase.getRbcNews()
+            else -> newsUseCase.getAllNews()
+        }
     }
 
+    fun loadNews() {
+        viewModelScope.launch {
+            _isLoading.postValue(true)
+            _news.postValue(change(source))
+            _isLoading.postValue(false)
+        }
+    }
 
-    val newsList: LiveData<List<News>>
-        get() = _newsList
+    init {
+        loadNews()
+    }
 
 }
 
-class NewsViewModelFactory(private val newsRepo: NewsRepo, private val source: String) : ViewModelProvider.Factory {
+class NewsViewModelFactory(private val newsUseCase: NewsUseCase, private val source: String) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(NewsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return NewsViewModel(newsRepo, source) as T
+            return NewsViewModel(newsUseCase, source) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

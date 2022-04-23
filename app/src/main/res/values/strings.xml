@@ -12,6 +12,7 @@
 
     <!-- Sync Preferences -->
     <string name="lenta_title">Lenta.ru</string>
+    <string name="rbc_title">rbc.ru</string>
     <string name="attachment_title">Download incoming attachments</string>
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>

@@ -14,9 +14,10 @@ import ru.example.andoid_app_news.ui.tab.TabPagerAdapter
 
 class NewsFragment : Fragment() {
 
-    private val sources: List<String> = arrayListOf("All", "Lenta")
+    private val sources: List<String> = arrayListOf("All", "Lenta", "Rbc")
     private var binding: FragmentNewsBinding? = null
     private var tabLayoutMediator: TabLayoutMediator? = null
+    private var adapter: TabPagerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,13 +39,13 @@ class NewsFragment : Fragment() {
                 if (el == "All") {
                     checkedSources.add(el)
                 } else {
-                    if (sharedPref != null && sharedPref.getBoolean(el, false)) {
+                    if (sharedPref != null && sharedPref.getBoolean(el, true)) {
                         checkedSources.add(el)
                     }
                 }
             }
-
-            pager.adapter = TabPagerAdapter(childFragmentManager, viewLifecycleOwner.lifecycle, checkedSources)
+            adapter = TabPagerAdapter(childFragmentManager, viewLifecycleOwner.lifecycle, checkedSources)
+            pager.adapter = adapter
 
             tabLayoutMediator = TabLayoutMediator(tabLayout, pager) { tab, position ->
                 tab.text = checkedSources[position]

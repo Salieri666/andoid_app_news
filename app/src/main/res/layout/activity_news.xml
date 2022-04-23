@@ -83,6 +83,7 @@
             android:layout_marginTop="16dp"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
+            android:paddingBottom="16dp"
             android:text="TextDescription"
             android:textColor="@color/black"
             android:textSize="15sp"

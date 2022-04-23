@@ -7,21 +7,28 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.example.andoid_app_news.MainApplication
+import ru.example.andoid_app_news.api.NewsApiService
 import ru.example.andoid_app_news.databinding.FragmentTabBinding
 import ru.example.andoid_app_news.model.viewmodel.NewsViewModel
 import ru.example.andoid_app_news.model.viewmodel.NewsViewModelFactory
 import ru.example.andoid_app_news.repository.NewsRepo
 import ru.example.andoid_app_news.ui.news.RecyclerNewsAdapter
 import ru.example.andoid_app_news.ui.newsDescription.NewsActivity
+import ru.example.andoid_app_news.useCase.NewsUseCase
 
 private const val SOURCE = "SOURCE"
 
 class TabFragment : Fragment() {
 
     private val newsViewModel: NewsViewModel by viewModels {
-        NewsViewModelFactory(NewsRepo((activity?.application as MainApplication).httpClient), source?: "")
+        NewsViewModelFactory(
+            NewsUseCase(
+                NewsRepo(NewsApiService.instance((activity?.application as MainApplication).retrofit)),
+                PreferenceManager.getDefaultSharedPreferences(context)
+            ), source?: "")
     }
 
     private var newsAdapter: RecyclerNewsAdapter? = null
@@ -53,24 +60,26 @@ class TabFragment : Fragment() {
         super.onResume()
         loadingDialog?.show()
 
+        newsViewModel.isLoading.observe(viewLifecycleOwner) {
+            if (!it) {
+                loadingDialog?.close()
+            }
+        }
+
         source?.let {
-            newsViewModel.newsList.observe(viewLifecycleOwner) {
+            newsViewModel.news.observe(viewLifecycleOwner) {
                 it?.let {
                     newsAdapter?.submitList(it)
                 }
             }
         }
 
-        newsViewModel.isLoading.observe(viewLifecycleOwner) {
-            if (!it) {
-                loadingDialog?.close()
-            }
-        }
+
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        newsViewModel.newsList.removeObservers(viewLifecycleOwner)
+        newsViewModel.news.removeObservers(viewLifecycleOwner)
         newsViewModel.isLoading.removeObservers(viewLifecycleOwner)
     }
 
@@ -89,7 +98,7 @@ class TabFragment : Fragment() {
         newsAdapter?.setOnItemClickListener(object : RecyclerNewsAdapter.OnItemClickListener {
             override fun onClick(position: Int) {
                 val intent = Intent(requireContext(), NewsActivity::class.java)
-                intent.putExtra(NewsActivity.NEWS, newsViewModel.newsList.value?.get(position))
+                intent.putExtra(NewsActivity.NEWS, newsViewModel.news.value?.get(position))
                 startActivity(intent)
             }
         })
