@@ -6,7 +6,7 @@
         <PreferenceScreen
             app:allowDividerBelow="true"
             app:key="screen_profile_preferences"
-            app:summary="Not logged in"
+            app:summary="@string/settings_profile_summary"
             app:title="@string/signature_title"
             app:useSimpleSummaryProvider="true">
             <intent
@@ -23,7 +23,7 @@
         app:allowDividerAbove="true"
         app:allowDividerBelow="true"
         app:key="screen_map_preferences"
-        app:title="Map"
+        app:title="@string/settings_map"
         app:useSimpleSummaryProvider="true">
         <intent
             android:action="android.intent.action.VIEW"

@@ -25,4 +25,12 @@
     <string name="profile_exit">Log out</string>
     <string name="to_register"><u>Don\'t have an account? Sign up</u></string>
     <string name="to_login"><u>Do you have an account? Sign in</u></string>
+    <string name="back_button">back button</string>
+    <string name="bookmarks_title">Bookmarks</string>
+    <string name="loading_text">Loading...</string>
+    <string name="news_navigation">News</string>
+    <string name="bookmarks_navigation">Bookmarks</string>
+    <string name="settings_navigation">Settings</string>
+    <string name="settings_profile_summary">Not logged in</string>
+    <string name="settings_map">Map</string>
 </resources>

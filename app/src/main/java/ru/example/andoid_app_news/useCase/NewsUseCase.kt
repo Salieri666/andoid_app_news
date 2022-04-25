@@ -2,7 +2,6 @@ package ru.example.andoid_app_news.useCase
 
 import android.content.SharedPreferences
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
@@ -10,10 +9,6 @@ import ru.example.andoid_app_news.model.ui.News
 import ru.example.andoid_app_news.repository.NewsRepo
 import ru.example.andoid_app_news.service.rss.LentaRssParser
 import ru.example.andoid_app_news.service.rss.RbcRssParser
-import kotlin.concurrent.thread
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 class NewsUseCase(
     private val newsRepo: NewsRepo,
@@ -47,59 +42,31 @@ class NewsUseCase(
 
 
     suspend fun getLentaNews(): List<News> {
-        return withContext(Dispatchers.IO) {
-            val newsResult: ArrayList<News> = ArrayList()
-
-            val lentaNews = async {
-                val response = newsRepo.loadLentaNews()
-                parseLenta(response)
-            }
-
-            newsResult.addAll(lentaNews.await())
-            return@withContext newsResult
-        }
+        val response = newsRepo.loadLentaNews()
+        return parseLenta(response)
     }
 
     suspend fun getRbcNews(): List<News> {
-        return withContext(Dispatchers.IO) {
-            val newsResult: ArrayList<News> = ArrayList()
-
-            val rbcNews = async {
-                val response = newsRepo.loadRbcNews()
-                parseRbc(response)
-            }
-
-            newsResult.addAll(rbcNews.await())
-            return@withContext newsResult
-        }
+        val response = newsRepo.loadRbcNews()
+        return parseRbc(response)
     }
 
 
-    private suspend fun parseLenta(responseBody: ResponseBody) : List<News> {
-        return suspendCoroutine { continuation ->
-            thread {
-                try {
-                    val parser = LentaRssParser()
-                    val res = parser.parse(responseBody.byteStream()).items ?: emptyList()
-                    continuation.resume(res)
-                } catch (t: Throwable) {
-                    continuation.resumeWithException(t)
-                }
-            }
+    private fun parseLenta(responseBody: ResponseBody): List<News>  {
+        return try {
+            val parser = LentaRssParser()
+            parser.parse(responseBody.byteStream()).items ?: emptyList()
+        } catch (t: Throwable) {
+            emptyList()
         }
     }
 
-    private suspend fun parseRbc(responseBody: ResponseBody) : List<News> {
-        return suspendCoroutine { continuation ->
-            thread {
-                try {
-                    val parser = RbcRssParser()
-                    val res = parser.parse(responseBody.byteStream()).items ?: emptyList()
-                    continuation.resume(res)
-                } catch (t: Throwable) {
-                    continuation.resumeWithException(t)
-                }
-            }
+    private fun parseRbc(responseBody: ResponseBody) : List<News> {
+        return try {
+            val parser = RbcRssParser()
+            parser.parse(responseBody.byteStream()).items ?: emptyList()
+        } catch (t: Throwable) {
+            emptyList()
         }
     }
 
