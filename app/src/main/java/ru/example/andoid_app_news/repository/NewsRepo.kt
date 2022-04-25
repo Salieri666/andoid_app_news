@@ -20,4 +20,9 @@ class NewsRepo(
         newsApiService.getRbcNews()
     }
 
+    suspend fun loadTechNews(): ResponseBody = withContext(Dispatchers.IO) {
+        Log.v("Context1", "3DNews loading...  " + Thread.currentThread().name)
+        newsApiService.getTechNews()
+    }
+
 }

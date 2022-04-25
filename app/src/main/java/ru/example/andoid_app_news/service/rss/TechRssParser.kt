@@ -11,7 +11,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class RbcRssParser {
+class TechRssParser {
     private val ns: String? = null
 
     @Throws(XmlPullParserException::class, IOException::class)
@@ -89,20 +89,21 @@ class RbcRssParser {
             }
             when (parser.name) {
                 "title" -> title = readFromTag(parser, "title")
-                "rbc_news:full-text" -> description = readFromTag(parser, "rbc_news:full-text")
+                "description" -> description = readFromTag(parser, "description")
                 "link" -> link = readFromTag(parser, "link")
                 "pubDate" -> pubDate = readFromTag(parser, "pubDate")
                 "enclosure" -> img = readFromTagAttribute(parser, "enclosure", "url")
                 else -> skip(parser)
             }
         }
+
         val sdf = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z").withLocale(Locale.ENGLISH)
         val sourceDate = ZonedDateTime.parse(pubDate, sdf)
 
         val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss").withZone(TimeZone.getDefault().toZoneId()).withLocale(Locale.ENGLISH)
         val timeString = sourceDate.format(formatter)
 
-        return News(null, link?: UUID.randomUUID().toString(), title, description, timeString, img, "rbc.ru", sourceDate.toInstant().toEpochMilli())
+        return News(null, link?: UUID.randomUUID().toString(), title, description, timeString, img, "3dnews.ru", sourceDate.toInstant().toEpochMilli())
     }
 
 

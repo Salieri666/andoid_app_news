@@ -22,7 +22,7 @@ class SettingsNewsFragment : PreferenceFragmentCompat() {
                 if (sh.getBoolean("is_auth", false)) {
                     it.summary = sh.getString("login", "")
                 } else {
-                    it.summary = "Not logged in"
+                    it.summary = getString(R.string.settings_profile_summary)
                 }
             }
         }

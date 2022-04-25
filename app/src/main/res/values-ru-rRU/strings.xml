@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Новости</string>
+    <!-- Preference Titles -->
+    <string name="messages_header">Профиль</string>
+    <string name="news_sources">Источники новостей</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Твой профиль</string>
+    <string name="reply_title">Ответ по умолчанию</string>
+
+    <!-- Sync Preferences -->
+    <string name="lenta_title">Lenta.ru</string>
+    <string name="rbc_title">rbc.ru</string>
+    <string name="attachment_title">Загружать входящие вложения</string>
+    <string name="attachment_summary_on">Автоматически загружать вложения для входящих писем
+    </string>
+    <string name="attachment_summary_off">Загружать вложения только по запросу вручную</string>
+
+
+    <string name="login">Вход</string>
+    <string name="register">Регистрация</string>
+    <string name="profile_login">Твой логин:</string>
+    <string name="profile_exit">Выйти</string>
+    <string name="to_register"><u>Нет аккаунта? Зарегистрироваться</u></string>
+    <string name="to_login"><u>Есть аккаунт? Войти</u></string>
+    <string name="back_button">Кнопка назад</string>
+    <string name="bookmarks_title">Закладки</string>
+    <string name="loading_text">Загрузка…</string>
+    <string name="news_navigation">Новости</string>
+    <string name="bookmarks_navigation">Закладки</string>
+    <string name="settings_navigation">Настройки</string>
+    <string name="settings_profile_summary">Войти</string>
+    <string name="settings_map">Карта</string>
+    <string name="language_btn">Язык</string>
+    <string name="login_hint">Логин</string>
+    <string name="password_hint">Пароль</string>
+    <string name="tech_news">3dnews.ru</string>
+</resources>

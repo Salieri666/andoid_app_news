@@ -59,6 +59,7 @@ class TabFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         loadingDialog?.show()
+        newsViewModel.loadNews()
 
         newsViewModel.isLoading.observe(viewLifecycleOwner) {
             if (!it) {

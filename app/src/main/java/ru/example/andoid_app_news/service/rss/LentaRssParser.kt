@@ -96,10 +96,11 @@ class LentaRssParser {
                 else -> skip(parser)
             }
         }
-        val sdf = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z")
+
+        val sdf = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z").withLocale(Locale.ENGLISH)
         val sourceDate = ZonedDateTime.parse(pubDate, sdf)
 
-        val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss").withZone(TimeZone.getDefault().toZoneId())
+        val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss").withZone(TimeZone.getDefault().toZoneId()).withLocale(Locale.ENGLISH)
         val timeString = sourceDate.format(formatter)
 
         return News(null, link?: UUID.randomUUID().toString(), title, description, timeString, img, "Lenta.ru", sourceDate.toInstant().toEpochMilli())

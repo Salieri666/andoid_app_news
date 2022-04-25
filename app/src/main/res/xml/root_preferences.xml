@@ -44,6 +44,11 @@
             android:defaultValue="true"
             app:title="@string/rbc_title" />
 
+        <SwitchPreferenceCompat
+            app:key="3dnews"
+            android:defaultValue="true"
+            app:title="@string/tech_news" />
+
 
     </PreferenceCategory>
 

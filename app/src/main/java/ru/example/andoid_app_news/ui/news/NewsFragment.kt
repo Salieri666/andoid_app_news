@@ -14,7 +14,7 @@ import ru.example.andoid_app_news.ui.tab.TabPagerAdapter
 
 class NewsFragment : Fragment() {
 
-    private val sources: List<String> = arrayListOf("All", "Lenta", "Rbc")
+    private val sources: List<String> = arrayListOf("All", "Lenta", "Rbc", "3dnews")
     private var binding: FragmentNewsBinding? = null
     private var tabLayoutMediator: TabLayoutMediator? = null
     private var adapter: TabPagerAdapter? = null

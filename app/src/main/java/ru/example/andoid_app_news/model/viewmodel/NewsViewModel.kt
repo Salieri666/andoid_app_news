@@ -24,6 +24,7 @@ class NewsViewModel(private val newsUseCase: NewsUseCase,
             "All" -> newsUseCase.getAllNews()
             "Lenta" -> newsUseCase.getLentaNews()
             "Rbc" -> newsUseCase.getRbcNews()
+            "3dnews" -> newsUseCase.getTechNews()
             else -> newsUseCase.getAllNews()
         }
     }
@@ -34,10 +35,6 @@ class NewsViewModel(private val newsUseCase: NewsUseCase,
             _news.postValue(change(source))
             _isLoading.postValue(false)
         }
-    }
-
-    init {
-        loadNews()
     }
 
 }

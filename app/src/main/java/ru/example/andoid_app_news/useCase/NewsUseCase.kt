@@ -1,6 +1,7 @@
 package ru.example.andoid_app_news.useCase
 
 import android.content.SharedPreferences
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -9,6 +10,7 @@ import ru.example.andoid_app_news.model.ui.News
 import ru.example.andoid_app_news.repository.NewsRepo
 import ru.example.andoid_app_news.service.rss.LentaRssParser
 import ru.example.andoid_app_news.service.rss.RbcRssParser
+import ru.example.andoid_app_news.service.rss.TechRssParser
 
 class NewsUseCase(
     private val newsRepo: NewsRepo,
@@ -16,7 +18,7 @@ class NewsUseCase(
 ) {
 
     suspend fun getAllNews(): List<News> {
-        return withContext(Dispatchers.IO) {
+        return withContext(Dispatchers.Default) {
             val newsResult: ArrayList<News> = ArrayList()
 
             val lentaNews = launch {
@@ -33,8 +35,16 @@ class NewsUseCase(
                 }
             }
 
+            val techNews = launch {
+                if (sharedPref.getBoolean("3dnews", true)) {
+                    val response = newsRepo.loadTechNews()
+                    newsResult.addAll(parseTech(response))
+                }
+            }
+
             lentaNews.join()
             rbcNews.join()
+            techNews.join()
             newsResult.sortByDescending { el -> el.sourceDate }
             return@withContext newsResult
         }
@@ -43,18 +53,30 @@ class NewsUseCase(
 
     suspend fun getLentaNews(): List<News> {
         val response = newsRepo.loadLentaNews()
-        return parseLenta(response)
+        return withContext(Dispatchers.Default) {
+            parseLenta(response)
+        }
     }
 
     suspend fun getRbcNews(): List<News> {
         val response = newsRepo.loadRbcNews()
-        return parseRbc(response)
+        return withContext(Dispatchers.Default) {
+            parseRbc(response)
+        }
+    }
+
+    suspend fun getTechNews(): List<News> {
+        val response = newsRepo.loadTechNews()
+        return withContext(Dispatchers.Default) {
+            parseTech(response)
+        }
     }
 
 
     private fun parseLenta(responseBody: ResponseBody): List<News>  {
         return try {
             val parser = LentaRssParser()
+            Log.v("Context1", "Lenta parsing...  " + Thread.currentThread().name)
             parser.parse(responseBody.byteStream()).items ?: emptyList()
         } catch (t: Throwable) {
             emptyList()
@@ -64,6 +86,17 @@ class NewsUseCase(
     private fun parseRbc(responseBody: ResponseBody) : List<News> {
         return try {
             val parser = RbcRssParser()
+            Log.v("Context1", "Rbc parsing...  " + Thread.currentThread().name)
+            parser.parse(responseBody.byteStream()).items ?: emptyList()
+        } catch (t: Throwable) {
+            emptyList()
+        }
+    }
+
+    private fun parseTech(responseBody: ResponseBody) : List<News> {
+        return try {
+            val parser = TechRssParser()
+            Log.v("Context1", "3dnews parsing...  " + Thread.currentThread().name)
             parser.parse(responseBody.byteStream()).items ?: emptyList()
         } catch (t: Throwable) {
             emptyList()
