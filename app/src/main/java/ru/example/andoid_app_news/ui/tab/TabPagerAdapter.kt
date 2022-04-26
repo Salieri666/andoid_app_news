@@ -17,9 +17,13 @@ class TabPagerAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle,
         return TabFragment.newInstance(sources[position])
     }
 
-    fun removeFragment(position: Int) {
-        sources.removeAt(position)
-        notifyItemRangeChanged(position, sources.size)
-        notifyDataSetChanged()
+    private var sourcesId = sources.map { it.hashCode().toLong() }
+
+    override fun getItemId(position: Int): Long {
+        return sourcesId[position]
+    }
+
+    override fun containsItem(itemId: Long): Boolean {
+        return sourcesId.contains(itemId)
     }
 }
