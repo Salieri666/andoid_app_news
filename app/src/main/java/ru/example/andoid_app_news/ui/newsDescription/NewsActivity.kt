@@ -2,6 +2,7 @@ package ru.example.andoid_app_news.ui.newsDescription
 
 import android.content.Context
 import android.os.Bundle
+import android.text.Html
 import android.util.AttributeSet
 import android.view.View
 import androidx.activity.viewModels
@@ -43,7 +44,7 @@ class NewsActivity : AppCompatActivity() {
         newsBinding?.let {
             newsItem = intent.extras?.getParcelable(NEWS)
             it.newsTitleCommon.text = newsItem?.title
-            it.newsDescription.text = newsItem?.description
+            it.newsDescription.text = Html.fromHtml(newsItem?.description ?: "", Html.FROM_HTML_MODE_LEGACY)
             it.newsDateActivity.text = newsItem?.date
             it.newsSourceActivity.text = newsItem?.source
 
