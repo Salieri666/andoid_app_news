@@ -42,7 +42,7 @@ data class News(
 
         fun toEntity(news: News, createdDate: Long): BookmarkEntity {
             return BookmarkEntity(
-                null,
+                news.id,
                 news.url,
                 news.title,
                 news.description,
