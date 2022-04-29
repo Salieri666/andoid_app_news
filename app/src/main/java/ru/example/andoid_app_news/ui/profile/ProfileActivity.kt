@@ -65,7 +65,7 @@ class ProfileActivity : AppCompatActivity() {
                 profileViewModel.authUser(AuthDto(login, pass), false).observe(this) {
                     it?.let {
                         if (!it.isSuccess) {
-                            val toast = Toast.makeText(applicationContext, "Your credentials is wrong", Toast.LENGTH_LONG)
+                            val toast = Toast.makeText(applicationContext, getString(R.string.wrongCredentials), Toast.LENGTH_LONG)
                                 toast.setGravity(Gravity.CENTER,200,200)
                                 toast.show()
                         }
@@ -76,7 +76,7 @@ class ProfileActivity : AppCompatActivity() {
                 profileViewModel.authUser(AuthDto(login, pass), true).observe(this) {
                     it?.let {
                         if (!it.isSuccess) {
-                            val toast = Toast.makeText(applicationContext, "Something goes wrong", Toast.LENGTH_LONG)
+                            val toast = Toast.makeText(applicationContext, getString(R.string.loginExists), Toast.LENGTH_LONG)
                             toast.setGravity(Gravity.CENTER,200,200)
                             toast.show()
                         }

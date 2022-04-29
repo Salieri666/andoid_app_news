@@ -37,4 +37,6 @@
     <string name="password_hint">Пароль</string>
     <string name="tech_news">3dnews.ru</string>
     <string name="all">Все</string>
+    <string name="wrongCredentials">Неверные данные для входа</string>
+    <string name="loginExists">Такой логин уже существует</string>
 </resources>
