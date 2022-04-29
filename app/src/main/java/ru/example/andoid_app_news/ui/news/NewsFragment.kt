@@ -9,18 +9,20 @@ import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import ru.example.andoid_app_news.R
 import ru.example.andoid_app_news.databinding.FragmentNewsBinding
 import ru.example.andoid_app_news.ui.tab.TabPagerAdapter
 
 class NewsFragment : Fragment() {
 
-    private val sources: List<String> = arrayListOf("All", "Lenta", "Rbc", "3dnews")
+    private var sources: List<String> = emptyList()
     private var binding: FragmentNewsBinding? = null
     private var tabLayoutMediator: TabLayoutMediator? = null
     private var adapter: TabPagerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        sources = arrayListOf(getString(R.string.all), "Lenta", "Rbc", "3dnews")
     }
 
     override fun onCreateView(

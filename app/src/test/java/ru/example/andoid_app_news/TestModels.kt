@@ -5,11 +5,13 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import ru.example.andoid_app_news.model.data.BookmarkEntity
 import ru.example.andoid_app_news.model.ui.News
 import ru.example.andoid_app_news.samples.NewsSamples
 import ru.example.andoid_app_news.service.rss.LentaRssParser
 
+@Config(manifest=Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class TestModels {
     @Test
