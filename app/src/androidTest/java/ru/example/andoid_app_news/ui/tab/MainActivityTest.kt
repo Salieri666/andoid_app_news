@@ -26,7 +26,7 @@ class MainActivityTest {
 
     @Test
     fun checkNewsTab() {
-        waitForDialogWithText(R.id.newsFragment, 10000)
+        waitForDialogWithId(R.id.newsFragment, 10000)
 
         onView(withId(R.id.newsFragment))
             .check(matches(isDisplayed()))
@@ -38,7 +38,7 @@ class MainActivityTest {
 
     @Test
     fun checkBookmarksTab() {
-        waitForDialogWithText(R.id.newsFragment, 10000)
+        waitForDialogWithId(R.id.newsFragment, 10000)
 
         onView(withId(R.id.bookmarksFragment)).perform(click())
             .check(matches(isDisplayed()))
@@ -46,30 +46,25 @@ class MainActivityTest {
 
     @Test
     fun checkSettingTab() {
-        waitForDialogWithText(R.id.newsFragment, 10000)
+        waitForDialogWithId(R.id.newsFragment, 10000)
 
         onView(withId(R.id.settingsFragment)).perform(click())
             .check(matches(isDisplayed()))
     }
 
-    private fun waitForDialogWithText(id: Int, timeout: Long) {
+    private fun waitForDialogWithId(id: Int, timeout: Long) {
         waitForDialog(withId(id), timeout)
     }
 
     private fun waitForDialog(viewMatcher: Matcher<View>, timeout: Long) {
         val endTime = System.currentTimeMillis() + timeout
-        var exception: Exception? = null
         while (System.currentTimeMillis() < endTime) {
-            exception = try {
-                // wait for x second // Thread.sleep(x mills)
+            try {
                 onView(viewMatcher).check(matches(isDisplayed()))
                 return
             } catch (e: Exception) {
-                e
+
             }
-        }
-        if (exception != null) {
-            throw RuntimeException(exception.message)
         }
     }
 
