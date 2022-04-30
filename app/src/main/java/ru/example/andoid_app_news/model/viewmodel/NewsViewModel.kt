@@ -25,6 +25,7 @@ class NewsViewModel(private val newsUseCase: NewsUseCase,
             "Lenta" -> newsUseCase.getLentaNews()
             "Rbc" -> newsUseCase.getRbcNews()
             "3dnews" -> newsUseCase.getTechNews()
+            "Nplus1" -> newsUseCase.getNplusNews()
             else -> newsUseCase.getAllNews()
         }
     }

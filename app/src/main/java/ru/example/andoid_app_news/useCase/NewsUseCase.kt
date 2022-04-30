@@ -9,6 +9,7 @@ import okhttp3.ResponseBody
 import ru.example.andoid_app_news.model.ui.News
 import ru.example.andoid_app_news.repository.NewsRepo
 import ru.example.andoid_app_news.service.rss.LentaRssParser
+import ru.example.andoid_app_news.service.rss.NplusOneRssParser
 import ru.example.andoid_app_news.service.rss.RbcRssParser
 import ru.example.andoid_app_news.service.rss.TechRssParser
 
@@ -42,9 +43,17 @@ class NewsUseCase(
                 }
             }
 
+            val nplusNews = launch {
+                if (sharedPref.getBoolean("Nplus1", true)) {
+                    val response = newsRepo.loadNplusNews()
+                    newsResult.addAll(parseNplus(response))
+                }
+            }
+
             lentaNews.join()
             rbcNews.join()
             techNews.join()
+            nplusNews.join()
             newsResult.sortByDescending { el -> el.sourceDate }
             return@withContext newsResult
         }
@@ -69,6 +78,14 @@ class NewsUseCase(
         val response = newsRepo.loadTechNews()
         return withContext(Dispatchers.Default) {
             parseTech(response)
+        }
+    }
+
+    suspend fun getNplusNews(): List<News> {
+        val response = newsRepo.loadNplusNews()
+        Log.v("Nplus1", response.toString())
+        return withContext(Dispatchers.Default) {
+            parseNplus(response)
         }
     }
 
@@ -97,6 +114,16 @@ class NewsUseCase(
         return try {
             val parser = TechRssParser()
             Log.v("Context1", "3dnews parsing...  " + Thread.currentThread().name)
+            parser.parse(responseBody.byteStream()).items ?: emptyList()
+        } catch (t: Throwable) {
+            emptyList()
+        }
+    }
+
+    private fun parseNplus(responseBody: ResponseBody) : List<News> {
+        return try {
+            val parser = NplusOneRssParser()
+            Log.v("Context1", "Nplus1 parsing...  " + Thread.currentThread().name)
             parser.parse(responseBody.byteStream()).items ?: emptyList()
         } catch (t: Throwable) {
             emptyList()

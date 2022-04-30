@@ -6,7 +6,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class RbcRssParser : AbstractRssParser() {
+class NplusOneRssParser : AbstractRssParser() {
 
     override fun readItem(parser: XmlPullParser): News {
         parser.require(XmlPullParser.START_TAG, ns, "item")
@@ -22,10 +22,10 @@ class RbcRssParser : AbstractRssParser() {
             }
             when (parser.name) {
                 "title" -> title = readFromTag(parser, "title")
-                "rbc_news:full-text" -> description = readFromTag(parser, "rbc_news:full-text")
+                "description" -> description = readFromTag(parser, "description")
                 "link" -> link = readFromTag(parser, "link")
                 "pubDate" -> pubDate = readFromTag(parser, "pubDate")
-                "enclosure" -> img = readFromTagAttribute(parser, "enclosure", "url")
+                "media:content" -> img = readFromTagAttribute(parser, "media:content", "url")
                 else -> skip(parser)
             }
         }
@@ -35,6 +35,6 @@ class RbcRssParser : AbstractRssParser() {
         val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm:ss").withZone(TimeZone.getDefault().toZoneId()).withLocale(Locale.ENGLISH)
         val timeString = sourceDate.format(formatter)
 
-        return News(null, link?: UUID.randomUUID().toString(), title, description, timeString, img, "rbc.ru", sourceDate.toInstant().toEpochMilli())
+        return News(null, link?: UUID.randomUUID().toString(), title, description, timeString, img, "nplus1.ru", sourceDate.toInstant().toEpochMilli())
     }
 }

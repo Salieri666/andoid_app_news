@@ -22,7 +22,7 @@ class NewsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sources = arrayListOf(getString(R.string.all), "Lenta", "Rbc", "3dnews")
+        sources = arrayListOf(getString(R.string.all), "Lenta", "Rbc", "3dnews", "Nplus1")
     }
 
     override fun onCreateView(

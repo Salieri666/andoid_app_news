@@ -15,6 +15,9 @@ interface NewsApiService {
     @GET("https://3dnews.ru/breaking/rss/")
     suspend fun getTechNews() : ResponseBody
 
+    @GET("https://nplus1.ru/rss")
+    suspend fun getNplusNews() : ResponseBody
+
     companion object {
         fun instance(retrofit: Retrofit): NewsApiService  {
             return retrofit.create(NewsApiService::class.java)

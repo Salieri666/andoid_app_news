@@ -49,6 +49,11 @@
             android:defaultValue="true"
             app:title="@string/tech_news" />
 
+        <SwitchPreferenceCompat
+            app:key="Nplus1"
+            android:defaultValue="true"
+            app:title="@string/nplus_news" />
+
 
     </PreferenceCategory>
 

@@ -35,6 +35,7 @@
     <string name="login_hint">Login</string>
     <string name="password_hint">Password</string>
     <string name="tech_news">3dnews.ru</string>
+    <string name="nplus_news">nplus1.ru</string>
     <string name="all">All</string>
     <string name="wrongCredentials">Your credentials is wrong</string>
     <string name="loginExists">This login already exists</string>

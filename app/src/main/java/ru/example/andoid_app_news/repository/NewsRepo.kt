@@ -25,4 +25,8 @@ class NewsRepo(
         newsApiService.getTechNews()
     }
 
+    suspend fun loadNplusNews(): ResponseBody = withContext(Dispatchers.IO) {
+        Log.v("Context1", "Nplus1 loading...  " + Thread.currentThread().name)
+        newsApiService.getNplusNews()
+    }
 }
