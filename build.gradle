@@ -9,3 +9,8 @@ plugins {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+task downloadDependencies {
+    doLast {
+        configurations.findAll{it.canBeResolved}.each{it.resolve()}
+    }
+}
