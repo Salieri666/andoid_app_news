@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.coroutines.Job
 import ru.example.andoid_app_news.MainApplication
 import ru.example.andoid_app_news.api.NewsApiService
 import ru.example.andoid_app_news.databinding.FragmentTabBinding
@@ -35,6 +37,7 @@ class TabFragment : Fragment() {
     private var binding: FragmentTabBinding? = null
     private var source: String? = null
     private var loadingDialog: LoadingDialog? = null
+    private var newsJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +58,16 @@ class TabFragment : Fragment() {
         return binding?.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        source?.let {
+            newsJob = lifecycleScope.launchWhenResumed {
+                newsViewModel.news.collect {
+                    newsAdapter?.submitList(it)
+                }
+            }
+        }
+    }
 
     override fun onResume() {
         super.onResume()
@@ -68,19 +81,26 @@ class TabFragment : Fragment() {
         }
 
         source?.let {
-            newsViewModel.news.observe(viewLifecycleOwner) {
+            /*newsViewModel.news.observe(viewLifecycleOwner) {
                 it?.let {
                     newsAdapter?.submitList(it)
                 }
-            }
+            }*/
         }
 
 
     }
 
+    override fun onPause() {
+        super.onPause()
+        newsJob?.cancel()
+        loadingDialog?.close()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
-        newsViewModel.news.removeObservers(viewLifecycleOwner)
+        newsJob?.cancel()
+        //newsViewModel.news.removeObservers(viewLifecycleOwner)
         newsViewModel.isLoading.removeObservers(viewLifecycleOwner)
     }
 

@@ -1,7 +1,7 @@
 package ru.example.andoid_app_news.model.viewmodel
 
 import androidx.lifecycle.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
 import ru.example.andoid_app_news.model.ui.News
 import ru.example.andoid_app_news.useCase.NewsUseCase
 
@@ -13,13 +13,16 @@ class NewsViewModel(private val newsUseCase: NewsUseCase,
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
-    private val _news: MutableLiveData<List<News>> = MutableLiveData(emptyList())
+    /*private val _news: MutableLiveData<List<News>> = MutableLiveData(emptyList())
 
     val news: LiveData<List<News>>
-        get() = _news
+        get() = _news*/
+
+    private val _news = MutableStateFlow(emptyList<News>())
+    val news: StateFlow<List<News>> = _news
 
 
-    private suspend fun change(source: String) : List<News> {
+    private fun load(source: String) : Flow<List<News>> {
         return when(source) {
             "All" -> newsUseCase.getAllNews()
             "Lenta" -> newsUseCase.getLentaNews()
@@ -31,11 +34,18 @@ class NewsViewModel(private val newsUseCase: NewsUseCase,
     }
 
     fun loadNews() {
-        viewModelScope.launch {
+        load(source)
+            .onEach {
+                _news.value = it
+                if (it.isNotEmpty())
+                    _isLoading.postValue(false)
+            }
+            .launchIn(viewModelScope)
+        /*viewModelScope.launch {
             _isLoading.postValue(true)
             _news.postValue(change(source))
             _isLoading.postValue(false)
-        }
+        }*/
     }
 
 }
