@@ -3,8 +3,7 @@ package ru.example.andoid_app_news.useCase
 import android.content.SharedPreferences
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.*
 import okhttp3.ResponseBody
 import ru.example.andoid_app_news.model.ui.News
 import ru.example.andoid_app_news.repository.NewsRepo
@@ -17,7 +16,62 @@ class NewsUseCase(
     private val sharedPref: SharedPreferences,
 ) {
 
-    suspend fun getAllNews(): List<News> {
+    fun getLentaNews(): Flow<List<News>> = flow {
+        emit(newsRepo.loadLentaNews())
+    }
+        .flowOn(Dispatchers.IO)
+        .map { list: ResponseBody ->
+            parseLenta(list)
+        }
+        .catch {
+            emptyList<News>()
+        }
+        .flowOn(Dispatchers.Default)
+
+    fun getRbcNews(): Flow<List<News>> = flow {
+        emit(newsRepo.loadRbcNews())
+    }
+        .flowOn(Dispatchers.IO)
+        .map { list: ResponseBody ->
+            Log.i("Loading", "Parsing rbc news...")
+            parseRbc(list)
+        }
+        .catch {
+            emptyList<News>()
+            Log.e("Loading_Error", it.localizedMessage, it)
+        }
+        .flowOn(Dispatchers.Default)
+
+    fun getTechNews(): Flow<List<News>> = flow {
+        emit(newsRepo.loadTechNews())
+    }
+        .flowOn(Dispatchers.IO)
+        .map { list: ResponseBody ->
+            Log.i("Loading", "Parsing rbc news...")
+            parseTech(list)
+        }
+        .catch {
+            emptyList<News>()
+            Log.e("Loading_Error", it.localizedMessage, it)
+        }
+        .flowOn(Dispatchers.Default)
+
+    fun getAllNews(): Flow<List<News>> =
+        combine(
+            getLentaNews(),
+            getRbcNews(),
+            getTechNews()
+        ) { list1, list2, list3 ->
+            val newsResult: ArrayList<News> = ArrayList()
+            newsResult.addAll(list1)
+            newsResult.addAll(list2)
+            newsResult.addAll(list3)
+            newsResult.sortByDescending { el -> el.sourceDate }
+            return@combine newsResult
+        }.flowOn(Dispatchers.Default)
+
+
+    /*suspend fun getAllNews(): List<News> {
         return withContext(Dispatchers.Default) {
             val newsResult: ArrayList<News> = ArrayList()
 
@@ -72,7 +126,7 @@ class NewsUseCase(
         }
     }
 
-
+*/
     private fun parseLenta(responseBody: ResponseBody): List<News>  {
         return try {
             val parser = LentaRssParser()
