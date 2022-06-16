@@ -5,78 +5,22 @@ import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import okhttp3.ResponseBody
+import ru.example.andoid_app_news.model.data.NewsSources
 import ru.example.andoid_app_news.model.ui.News
 import ru.example.andoid_app_news.repository.NewsRepo
-import ru.example.andoid_app_news.service.rss.LentaRssParser
-import ru.example.andoid_app_news.service.rss.NplusOneRssParser
-import ru.example.andoid_app_news.service.rss.RbcRssParser
-import ru.example.andoid_app_news.service.rss.TechRssParser
+import ru.example.andoid_app_news.service.rss.*
 
 class NewsUseCase(
     private val newsRepo: NewsRepo,
     private val sharedPref: SharedPreferences,
 ) {
 
-    fun getLentaNews(): Flow<List<News>> = flow {
-        emit(newsRepo.loadLentaNews())
-    }
-        .flowOn(Dispatchers.IO)
-        .map { list: ResponseBody ->
-            parseLenta(list)
-        }
-        .catch {
-            emptyList<News>()
-        }
-        .flowOn(Dispatchers.Default)
-
-    fun getRbcNews(): Flow<List<News>> = flow {
-        emit(newsRepo.loadRbcNews())
-    }
-        .flowOn(Dispatchers.IO)
-        .map { list: ResponseBody ->
-            Log.i("Loading", "Parsing rbc news...")
-            parseRbc(list)
-        }
-        .catch {
-            emptyList<News>()
-            Log.e("Loading_Error", it.localizedMessage, it)
-        }
-        .flowOn(Dispatchers.Default)
-
-    fun getTechNews(): Flow<List<News>> = flow {
-        emit(newsRepo.loadTechNews())
-    }
-        .flowOn(Dispatchers.IO)
-        .map { list: ResponseBody ->
-            Log.i("Loading", "Parsing rbc news...")
-            parseTech(list)
-        }
-        .catch {
-            emptyList<News>()
-            Log.e("Loading_Error", it.localizedMessage, it)
-        }
-        .flowOn(Dispatchers.Default)
-
-    fun getNplusNews(): Flow<List<News>> = flow {
-        emit(newsRepo.loadNplusNews())
-    }
-        .flowOn(Dispatchers.IO)
-        .map { list: ResponseBody ->
-            Log.i("Loading", "Parsing nplus news...")
-            parseNplus(list)
-        }
-        .catch {
-            emptyList<News>()
-            Log.e("Loading_Error", it.localizedMessage, it)
-        }
-        .flowOn(Dispatchers.Default)
-
     fun getAllNews(): Flow<List<News>> =
         combine(
-            getLentaNews(),
-            getRbcNews(),
-            getTechNews(),
-            getNplusNews()
+            getNews(NewsSources.LENTA),
+            getNews(NewsSources.RBC),
+            getNews(NewsSources.TECH_NEWS),
+            getNews(NewsSources.NPLUS1)
         ) { list1, list2, list3, list4 ->
             val newsResult: ArrayList<News> = ArrayList()
             newsResult.addAll(list1)
@@ -87,44 +31,47 @@ class NewsUseCase(
             return@combine newsResult
         }.flowOn(Dispatchers.Default)
 
-    private fun parseLenta(responseBody: ResponseBody): List<News>  {
+
+    private suspend fun getNewsBySourceType(type: NewsSources) : ResponseBody {
+        return when (type) {
+            NewsSources.LENTA -> newsRepo.loadLentaNews()
+            NewsSources.RBC -> newsRepo.loadRbcNews()
+            NewsSources.TECH_NEWS -> newsRepo.loadTechNews()
+            NewsSources.NPLUS1 -> newsRepo.loadNplusNews()
+            else -> throw IllegalArgumentException("The type -> $type not founded!")
+        }
+    }
+
+    private fun getParserBySourceType(type: NewsSources) : AbstractRssParser {
+        return when (type) {
+            NewsSources.LENTA -> LentaRssParser()
+            NewsSources.RBC -> RbcRssParser()
+            NewsSources.TECH_NEWS -> TechRssParser()
+            NewsSources.NPLUS1 -> NplusOneRssParser()
+            else -> throw IllegalArgumentException("The type -> $type for parser not founded!")
+        }
+    }
+
+    private fun parseNews(responseBody: ResponseBody, type: NewsSources) : List<News> {
         return try {
-            val parser = LentaRssParser()
-            Log.v("Context1", "Lenta parsing...  " + Thread.currentThread().name)
+            val parser = getParserBySourceType(type)
             parser.parse(responseBody.byteStream()).items ?: emptyList()
         } catch (t: Throwable) {
+            Log.e("Error_NEWS_APP", t.localizedMessage, t)
             emptyList()
         }
     }
 
-    private fun parseRbc(responseBody: ResponseBody) : List<News> {
-        return try {
-            val parser = RbcRssParser()
-            Log.v("Context1", "Rbc parsing...  " + Thread.currentThread().name)
-            parser.parse(responseBody.byteStream()).items ?: emptyList()
-        } catch (t: Throwable) {
-            emptyList()
-        }
+    fun getNews(type: NewsSources): Flow<List<News>> = flow {
+        emit(getNewsBySourceType(type))
     }
-
-    private fun parseTech(responseBody: ResponseBody) : List<News> {
-        return try {
-            val parser = TechRssParser()
-            Log.v("Context1", "3dnews parsing...  " + Thread.currentThread().name)
-            parser.parse(responseBody.byteStream()).items ?: emptyList()
-        } catch (t: Throwable) {
-            emptyList()
+        .flowOn(Dispatchers.IO)
+        .map { list: ResponseBody ->
+            parseNews(list, type)
         }
-    }
-
-    private fun parseNplus(responseBody: ResponseBody) : List<News> {
-        return try {
-            val parser = NplusOneRssParser()
-            Log.v("Context1", "Nplus1 parsing...  " + Thread.currentThread().name)
-            parser.parse(responseBody.byteStream()).items ?: emptyList()
-        } catch (t: Throwable) {
-            emptyList()
+        .catch {
+            emptyList<News>()
+            Log.e("Error_NEWS_APP", it.localizedMessage, it)
         }
-    }
-
+        .flowOn(Dispatchers.Default)
 }

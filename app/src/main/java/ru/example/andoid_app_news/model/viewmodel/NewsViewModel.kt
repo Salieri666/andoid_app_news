@@ -2,6 +2,7 @@ package ru.example.andoid_app_news.model.viewmodel
 
 import androidx.lifecycle.*
 import kotlinx.coroutines.flow.*
+import ru.example.andoid_app_news.model.data.NewsSources
 import ru.example.andoid_app_news.model.ui.News
 import ru.example.andoid_app_news.useCase.NewsUseCase
 
@@ -25,10 +26,10 @@ class NewsViewModel(private val newsUseCase: NewsUseCase,
     private fun load(source: String) : Flow<List<News>> {
         return when(source) {
             "All" -> newsUseCase.getAllNews()
-            "Lenta" -> newsUseCase.getLentaNews()
-            "Rbc" -> newsUseCase.getRbcNews()
-            "3dnews" -> newsUseCase.getTechNews()
-            "Nplus1" -> newsUseCase.getNplusNews()
+            "Lenta" -> newsUseCase.getNews(NewsSources.LENTA)
+            "Rbc" -> newsUseCase.getNews(NewsSources.RBC)
+            "3dnews" -> newsUseCase.getNews(NewsSources.TECH_NEWS)
+            "Nplus1" -> newsUseCase.getNews(NewsSources.NPLUS1)
             else -> newsUseCase.getAllNews()
         }
     }
