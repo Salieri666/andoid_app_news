@@ -57,86 +57,36 @@ class NewsUseCase(
         }
         .flowOn(Dispatchers.Default)
 
+    fun getNplusNews(): Flow<List<News>> = flow {
+        emit(newsRepo.loadNplusNews())
+    }
+        .flowOn(Dispatchers.IO)
+        .map { list: ResponseBody ->
+            Log.i("Loading", "Parsing nplus news...")
+            parseNplus(list)
+        }
+        .catch {
+            emptyList<News>()
+            Log.e("Loading_Error", it.localizedMessage, it)
+        }
+        .flowOn(Dispatchers.Default)
+
     fun getAllNews(): Flow<List<News>> =
         combine(
             getLentaNews(),
             getRbcNews(),
-            getTechNews()
-        ) { list1, list2, list3 ->
+            getTechNews(),
+            getNplusNews()
+        ) { list1, list2, list3, list4 ->
             val newsResult: ArrayList<News> = ArrayList()
             newsResult.addAll(list1)
             newsResult.addAll(list2)
             newsResult.addAll(list3)
+            newsResult.addAll(list4)
             newsResult.sortByDescending { el -> el.sourceDate }
             return@combine newsResult
         }.flowOn(Dispatchers.Default)
 
-
-    /*suspend fun getAllNews(): List<News> {
-        return withContext(Dispatchers.Default) {
-            val newsResult: ArrayList<News> = ArrayList()
-
-            val lentaNews = launch {
-                if (sharedPref.getBoolean("Lenta", true)) {
-                    val response = newsRepo.loadLentaNews()
-                    newsResult.addAll(parseLenta(response))
-                }
-            }
-
-            val rbcNews = launch {
-                if (sharedPref.getBoolean("Rbc", true)) {
-                    val response = newsRepo.loadRbcNews()
-                    newsResult.addAll(parseRbc(response))
-                }
-            }
-
-            val techNews = launch {
-                if (sharedPref.getBoolean("3dnews", true)) {
-                    val response = newsRepo.loadTechNews()
-                    newsResult.addAll(parseTech(response))
-                }
-            }
-
-            lentaNews.join()
-            rbcNews.join()
-            techNews.join()
-            newsResult.sortByDescending { el -> el.sourceDate }
-            return@withContext newsResult
-        }
-    }
-
-
-    suspend fun getLentaNews(): List<News> {
-        val response = newsRepo.loadLentaNews()
-        return withContext(Dispatchers.Default) {
-            parseLenta(response)
-        }
-    }
-
-    suspend fun getRbcNews(): List<News> {
-        val response = newsRepo.loadRbcNews()
-        return withContext(Dispatchers.Default) {
-            parseRbc(response)
-        }
-    }
-
-    suspend fun getTechNews(): List<News> {
-        val response = newsRepo.loadTechNews()
-        return withContext(Dispatchers.Default) {
-            parseTech(response)
-        }
-    }
-
-    suspend fun getNplusNews(): List<News> {
-        val response = newsRepo.loadNplusNews()
-        Log.v("Nplus1", response.toString())
-        return withContext(Dispatchers.Default) {
-            parseNplus(response)
-        }
-    }
-
-
-*/
     private fun parseLenta(responseBody: ResponseBody): List<News>  {
         return try {
             val parser = LentaRssParser()
