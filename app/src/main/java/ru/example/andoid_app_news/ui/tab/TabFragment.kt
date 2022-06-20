@@ -67,12 +67,19 @@ class TabFragment : Fragment() {
                 }
             }
         }
+
+        newsViewModel.isLoading.observe(viewLifecycleOwner) {
+            if (!it) {
+                loadingDialog?.close()
+            } else {
+                loadingDialog?.show()
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
         source?.let { newsSource ->
-            loadingDialog?.show()
 
             if (newsSource != NewsSources.ALL) {
                 newsViewModel.loadNews(newsSource)
@@ -82,24 +89,7 @@ class TabFragment : Fragment() {
                 newsViewModel.loadNews(sources)
             }
 
-            newsViewModel.isLoading.observe(viewLifecycleOwner) {
-                if (!it) {
-                    loadingDialog?.close()
-                }
-            }
         }
-
-
-
-        source?.let {
-            /*newsViewModel.news.observe(viewLifecycleOwner) {
-                it?.let {
-                    newsAdapter?.submitList(it)
-                }
-            }*/
-        }
-
-
     }
 
     override fun onPause() {
@@ -111,7 +101,6 @@ class TabFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         newsJob?.cancel()
-        //newsViewModel.news.removeObservers(viewLifecycleOwner)
         newsViewModel.isLoading.removeObservers(viewLifecycleOwner)
     }
 

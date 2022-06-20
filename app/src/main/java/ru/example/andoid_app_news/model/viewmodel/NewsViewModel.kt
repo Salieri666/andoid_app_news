@@ -3,12 +3,13 @@ package ru.example.andoid_app_news.model.viewmodel
 import androidx.lifecycle.*
 import kotlinx.coroutines.flow.*
 import ru.example.andoid_app_news.model.data.NewsSources
+import ru.example.andoid_app_news.model.data.ResultData
 import ru.example.andoid_app_news.model.ui.News
 import ru.example.andoid_app_news.useCase.NewsUseCase
 
 class NewsViewModel(private val newsUseCase: NewsUseCase) : ViewModel() {
 
-    private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(true)
+    private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val isLoading: LiveData<Boolean>
         get() = _isLoading
@@ -16,16 +17,6 @@ class NewsViewModel(private val newsUseCase: NewsUseCase) : ViewModel() {
     private val _news = MutableStateFlow(emptyList<News>())
     val news: StateFlow<List<News>> = _news
 
-
-    private fun load(source: NewsSources) : Flow<List<News>> {
-        return when(source) {
-            NewsSources.LENTA -> newsUseCase.getNews(NewsSources.LENTA)
-            NewsSources.RBC -> newsUseCase.getNews(NewsSources.RBC)
-            NewsSources.TECH_NEWS -> newsUseCase.getNews(NewsSources.TECH_NEWS)
-            NewsSources.NPLUS1 -> newsUseCase.getNews(NewsSources.NPLUS1)
-            else -> emptyFlow()
-        }
-    }
 
     fun loadNews(source: NewsSources) {
         loadNewsToValue {
@@ -39,16 +30,31 @@ class NewsViewModel(private val newsUseCase: NewsUseCase) : ViewModel() {
         }
     }
 
-    private fun loadNewsToValue(load: () -> Flow<List<News>>) {
-        load()
+    private fun loadNewsToValue(loadFunc: () -> Flow<ResultData<List<News>>>) {
+        loadFunc()
             .onEach {
-                _news.value = it
-                if (it.isNotEmpty())
-                    _isLoading.postValue(false)
+                when (it.status) {
+                    ResultData.Status.LOADING -> _isLoading.postValue(true)
+                    ResultData.Status.FAILED -> _isLoading.postValue(false)
+                    ResultData.Status.SUCCESSES -> {
+                        _isLoading.postValue(false)
+                        _news.value = it.value!!
+                    }
+                    else -> _isLoading.postValue(false)
+                }
             }
             .launchIn(viewModelScope)
     }
 
+    private fun load(source: NewsSources) : Flow<ResultData<List<News>>> {
+        return when(source) {
+            NewsSources.LENTA -> newsUseCase.getNews(NewsSources.LENTA)
+            NewsSources.RBC -> newsUseCase.getNews(NewsSources.RBC)
+            NewsSources.TECH_NEWS -> newsUseCase.getNews(NewsSources.TECH_NEWS)
+            NewsSources.NPLUS1 -> newsUseCase.getNews(NewsSources.NPLUS1)
+            else -> emptyFlow()
+        }
+    }
 }
 
 class NewsViewModelFactory(private val newsUseCase: NewsUseCase) : ViewModelProvider.Factory {

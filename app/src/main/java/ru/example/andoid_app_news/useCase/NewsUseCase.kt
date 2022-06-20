@@ -5,9 +5,10 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onStart
 import okhttp3.ResponseBody
 import ru.example.andoid_app_news.model.data.NewsSources
+import ru.example.andoid_app_news.model.data.ResultData
 import ru.example.andoid_app_news.model.ui.News
 import ru.example.andoid_app_news.repository.NewsRepo
 import ru.example.andoid_app_news.service.rss.*
@@ -17,18 +18,23 @@ class NewsUseCase(
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) {
 
-    fun getNews(type: NewsSources): Flow<List<News>> = flow {
+    fun getNews(type: NewsSources): Flow<ResultData<List<News>>> = flow {
+
         val response = getNewsBySourceType(type)
-        emit(parseNews(response, type))
+        val res = parseNews(response, type)
+        emit(
+            ResultData(ResultData.Status.SUCCESSES, res)
+        )
+
+    }.onStart {
+        emit(ResultData(ResultData.Status.LOADING))
+    }.catch {
+        Log.e("Error_NEWS_APP", it.localizedMessage, it)
+        ResultData(ResultData.Status.FAILED, emptyList<News>())
     }
-        .catch {
-            emptyList<News>()
-            Log.e("Error_NEWS_APP", it.localizedMessage, it)
-        }
-        .flowOn(Dispatchers.Default)
 
+    fun getAllNewsByList(list: List<NewsSources>): Flow<ResultData<List<News>>> = flow {
 
-    fun getAllNewsByList(list: List<NewsSources>): Flow<List<News>> = flow {
         val news = arrayListOf<News>()
         coroutineScope {
 
@@ -43,10 +49,13 @@ class NewsUseCase(
             }
 
         }
-        emit(news)
+        emit(ResultData(ResultData.Status.SUCCESSES, news as List<News>))
+
+    }.onStart {
+        emit(ResultData(ResultData.Status.LOADING))
     }.catch {
-        emptyList<News>()
         Log.e("Error_NEWS_APP", it.localizedMessage, it)
+        ResultData(ResultData.Status.FAILED, emptyList<News>())
     }
 
 
