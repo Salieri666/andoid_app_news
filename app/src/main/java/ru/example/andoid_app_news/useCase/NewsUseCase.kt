@@ -1,9 +1,11 @@
 package ru.example.andoid_app_news.useCase
 
-import android.content.SharedPreferences
 import android.util.Log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import okhttp3.ResponseBody
 import ru.example.andoid_app_news.model.data.NewsSources
 import ru.example.andoid_app_news.model.ui.News
@@ -12,24 +14,40 @@ import ru.example.andoid_app_news.service.rss.*
 
 class NewsUseCase(
     private val newsRepo: NewsRepo,
-    private val sharedPref: SharedPreferences,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) {
 
-    fun getAllNews(): Flow<List<News>> =
-        combine(
-            getNews(NewsSources.LENTA),
-            getNews(NewsSources.RBC),
-            getNews(NewsSources.TECH_NEWS),
-            getNews(NewsSources.NPLUS1)
-        ) { list1, list2, list3, list4 ->
-            val newsResult: ArrayList<News> = ArrayList()
-            newsResult.addAll(list1)
-            newsResult.addAll(list2)
-            newsResult.addAll(list3)
-            newsResult.addAll(list4)
-            newsResult.sortByDescending { el -> el.sourceDate }
-            return@combine newsResult
-        }.flowOn(Dispatchers.Default)
+    fun getNews(type: NewsSources): Flow<List<News>> = flow {
+        val response = getNewsBySourceType(type)
+        emit(parseNews(response, type))
+    }
+        .catch {
+            emptyList<News>()
+            Log.e("Error_NEWS_APP", it.localizedMessage, it)
+        }
+        .flowOn(Dispatchers.Default)
+
+
+    fun getAllNewsByList(list: List<NewsSources>): Flow<List<News>> = flow {
+        val news = arrayListOf<News>()
+        coroutineScope {
+
+            list.mapIndexed  { _, source ->
+                async {
+                    news.addAll(parseNews(getNewsBySourceType(source), source))
+                }
+            }.awaitAll()
+
+            withContext(defaultDispatcher) {
+                news.sortByDescending { el -> el.sourceDate }
+            }
+
+        }
+        emit(news)
+    }.catch {
+        emptyList<News>()
+        Log.e("Error_NEWS_APP", it.localizedMessage, it)
+    }
 
 
     private suspend fun getNewsBySourceType(type: NewsSources) : ResponseBody {
@@ -52,26 +70,15 @@ class NewsUseCase(
         }
     }
 
-    private fun parseNews(responseBody: ResponseBody, type: NewsSources) : List<News> {
-        return try {
-            val parser = getParserBySourceType(type)
-            parser.parse(responseBody.byteStream()).items ?: emptyList()
-        } catch (t: Throwable) {
-            Log.e("Error_NEWS_APP", t.localizedMessage, t)
-            emptyList()
+    private suspend fun parseNews(responseBody: ResponseBody, type: NewsSources) : List<News> = withContext(defaultDispatcher) {
+        val resultList = arrayListOf<News>()
+        val parser = getParserBySourceType(type)
+        kotlin.runCatching {
+            Log.v("Context1", "Parsing...  " + Thread.currentThread().name)
+            resultList.addAll(parser.parse(responseBody.byteStream()).items ?: emptyList())
         }
+        return@withContext resultList
     }
 
-    fun getNews(type: NewsSources): Flow<List<News>> = flow {
-        emit(getNewsBySourceType(type))
-    }
-        .flowOn(Dispatchers.IO)
-        .map { list: ResponseBody ->
-            parseNews(list, type)
-        }
-        .catch {
-            emptyList<News>()
-            Log.e("Error_NEWS_APP", it.localizedMessage, it)
-        }
-        .flowOn(Dispatchers.Default)
+
 }

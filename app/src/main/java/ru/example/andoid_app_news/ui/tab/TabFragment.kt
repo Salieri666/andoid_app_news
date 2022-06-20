@@ -14,6 +14,7 @@ import kotlinx.coroutines.Job
 import ru.example.andoid_app_news.MainApplication
 import ru.example.andoid_app_news.api.NewsApiService
 import ru.example.andoid_app_news.databinding.FragmentTabBinding
+import ru.example.andoid_app_news.model.data.NewsSources
 import ru.example.andoid_app_news.model.viewmodel.NewsViewModel
 import ru.example.andoid_app_news.model.viewmodel.NewsViewModelFactory
 import ru.example.andoid_app_news.repository.NewsRepo
@@ -28,21 +29,20 @@ class TabFragment : Fragment() {
     private val newsViewModel: NewsViewModel by viewModels {
         NewsViewModelFactory(
             NewsUseCase(
-                NewsRepo(NewsApiService.instance((activity?.application as MainApplication).retrofit)),
-                PreferenceManager.getDefaultSharedPreferences(context)
-            ), source?: "")
+                NewsRepo(NewsApiService.instance((activity?.application as MainApplication).retrofit))
+            ))
     }
 
     private var newsAdapter: RecyclerNewsAdapter? = null
     private var binding: FragmentTabBinding? = null
-    private var source: String? = null
+    private var source: NewsSources? = null
     private var loadingDialog: LoadingDialog? = null
     private var newsJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            source = it.getString(SOURCE)
+            source = it.getSerializable(SOURCE) as NewsSources?
         }
     }
 
@@ -71,14 +71,25 @@ class TabFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        loadingDialog?.show()
-        newsViewModel.loadNews()
+        source?.let { newsSource ->
+            loadingDialog?.show()
 
-        newsViewModel.isLoading.observe(viewLifecycleOwner) {
-            if (!it) {
-                loadingDialog?.close()
+            if (newsSource != NewsSources.ALL) {
+                newsViewModel.loadNews(newsSource)
+            } else {
+                val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
+                val sources = NewsSources.getList(sharedPref, context)
+                newsViewModel.loadNews(sources)
+            }
+
+            newsViewModel.isLoading.observe(viewLifecycleOwner) {
+                if (!it) {
+                    loadingDialog?.close()
+                }
             }
         }
+
+
 
         source?.let {
             /*newsViewModel.news.observe(viewLifecycleOwner) {
@@ -106,10 +117,10 @@ class TabFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(source: String) =
+        fun newInstance(source: NewsSources) =
             TabFragment().apply {
                 arguments = Bundle().apply {
-                    putString(SOURCE, source)
+                    putSerializable(SOURCE, source)
                 }
             }
     }
@@ -119,7 +130,7 @@ class TabFragment : Fragment() {
         newsAdapter?.setOnItemClickListener(object : RecyclerNewsAdapter.OnItemClickListener {
             override fun onClick(position: Int) {
                 val intent = Intent(requireContext(), NewsActivity::class.java)
-                intent.putExtra(NewsActivity.NEWS, newsViewModel.news.value?.get(position))
+                intent.putExtra(NewsActivity.NEWS, newsViewModel.news.value[position])
                 startActivity(intent)
             }
         })

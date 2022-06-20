@@ -35,22 +35,22 @@
     <PreferenceCategory app:title="@string/news_sources">
 
         <SwitchPreferenceCompat
-            app:key="Lenta"
+            app:key="@string/lenta_title"
             android:defaultValue="true"
             app:title="@string/lenta_title" />
 
         <SwitchPreferenceCompat
-            app:key="Rbc"
+            app:key="@string/rbc_title"
             android:defaultValue="true"
             app:title="@string/rbc_title" />
 
         <SwitchPreferenceCompat
-            app:key="3dnews"
+            app:key="@string/tech_news"
             android:defaultValue="true"
             app:title="@string/tech_news" />
 
         <SwitchPreferenceCompat
-            app:key="Nplus1"
+            app:key="@string/nplus_news"
             android:defaultValue="true"
             app:title="@string/nplus_news" />
 

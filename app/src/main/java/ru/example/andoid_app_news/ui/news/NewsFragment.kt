@@ -9,20 +9,18 @@ import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import ru.example.andoid_app_news.R
 import ru.example.andoid_app_news.databinding.FragmentNewsBinding
+import ru.example.andoid_app_news.model.data.NewsSources
 import ru.example.andoid_app_news.ui.tab.TabPagerAdapter
 
 class NewsFragment : Fragment() {
 
-    private var sources: List<String> = emptyList()
     private var binding: FragmentNewsBinding? = null
     private var tabLayoutMediator: TabLayoutMediator? = null
     private var adapter: TabPagerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sources = arrayListOf(getString(R.string.all), "Lenta", "Rbc", "3dnews", "Nplus1")
     }
 
     override fun onCreateView(
@@ -36,21 +34,20 @@ class NewsFragment : Fragment() {
             val pager: ViewPager2 = it.pager
 
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-            val checkedSources = mutableListOf<String>()
+            val sources = NewsSources.getList(sharedPref, context)
+
+
+            val checkedSources = mutableListOf(NewsSources.ALL)
             sources.forEach { el ->
-                if (el == "All") {
+                if (el != NewsSources.ALL && sharedPref != null && sharedPref.getBoolean(getString(el.id), true)) {
                     checkedSources.add(el)
-                } else {
-                    if (sharedPref != null && sharedPref.getBoolean(el, true)) {
-                        checkedSources.add(el)
-                    }
                 }
             }
             adapter = TabPagerAdapter(childFragmentManager, viewLifecycleOwner.lifecycle, checkedSources)
             pager.adapter = adapter
 
             tabLayoutMediator = TabLayoutMediator(tabLayout, pager) { tab, position ->
-                tab.text = checkedSources[position]
+                tab.text = getString(checkedSources[position].id)
             }
             tabLayoutMediator?.attach()
         }

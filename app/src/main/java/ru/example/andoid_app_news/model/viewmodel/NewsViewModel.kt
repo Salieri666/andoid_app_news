@@ -6,56 +6,56 @@ import ru.example.andoid_app_news.model.data.NewsSources
 import ru.example.andoid_app_news.model.ui.News
 import ru.example.andoid_app_news.useCase.NewsUseCase
 
-class NewsViewModel(private val newsUseCase: NewsUseCase,
-                    private val source: String) : ViewModel() {
+class NewsViewModel(private val newsUseCase: NewsUseCase) : ViewModel() {
 
     private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(true)
 
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
-    /*private val _news: MutableLiveData<List<News>> = MutableLiveData(emptyList())
-
-    val news: LiveData<List<News>>
-        get() = _news*/
-
     private val _news = MutableStateFlow(emptyList<News>())
     val news: StateFlow<List<News>> = _news
 
 
-    private fun load(source: String) : Flow<List<News>> {
+    private fun load(source: NewsSources) : Flow<List<News>> {
         return when(source) {
-            "All" -> newsUseCase.getAllNews()
-            "Lenta" -> newsUseCase.getNews(NewsSources.LENTA)
-            "Rbc" -> newsUseCase.getNews(NewsSources.RBC)
-            "3dnews" -> newsUseCase.getNews(NewsSources.TECH_NEWS)
-            "Nplus1" -> newsUseCase.getNews(NewsSources.NPLUS1)
-            else -> newsUseCase.getAllNews()
+            NewsSources.LENTA -> newsUseCase.getNews(NewsSources.LENTA)
+            NewsSources.RBC -> newsUseCase.getNews(NewsSources.RBC)
+            NewsSources.TECH_NEWS -> newsUseCase.getNews(NewsSources.TECH_NEWS)
+            NewsSources.NPLUS1 -> newsUseCase.getNews(NewsSources.NPLUS1)
+            else -> emptyFlow()
         }
     }
 
-    fun loadNews() {
-        load(source)
+    fun loadNews(source: NewsSources) {
+        loadNewsToValue {
+            load(source)
+        }
+    }
+
+    fun loadNews(sources: List<NewsSources>) {
+        loadNewsToValue {
+            newsUseCase.getAllNewsByList(sources)
+        }
+    }
+
+    private fun loadNewsToValue(load: () -> Flow<List<News>>) {
+        load()
             .onEach {
                 _news.value = it
                 if (it.isNotEmpty())
                     _isLoading.postValue(false)
             }
             .launchIn(viewModelScope)
-        /*viewModelScope.launch {
-            _isLoading.postValue(true)
-            _news.postValue(change(source))
-            _isLoading.postValue(false)
-        }*/
     }
 
 }
 
-class NewsViewModelFactory(private val newsUseCase: NewsUseCase, private val source: String) : ViewModelProvider.Factory {
+class NewsViewModelFactory(private val newsUseCase: NewsUseCase) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(NewsViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return NewsViewModel(newsUseCase, source) as T
+            return NewsViewModel(newsUseCase) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
