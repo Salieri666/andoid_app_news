@@ -10,11 +10,9 @@ import ru.example.andoid_app_news.useCase.NewsUseCase
 class NewsViewModel(private val newsUseCase: NewsUseCase) : ViewModel() {
 
     private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
-
-    val isLoading: LiveData<Boolean>
-        get() = _isLoading
-
     private val _news = MutableStateFlow(emptyList<News>())
+
+    val isLoading: LiveData<Boolean> = _isLoading
     val news: StateFlow<List<News>> = _news
 
 

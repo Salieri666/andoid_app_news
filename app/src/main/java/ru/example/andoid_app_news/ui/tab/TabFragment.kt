@@ -60,13 +60,6 @@ class TabFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        source?.let {
-            newsJob = lifecycleScope.launchWhenResumed {
-                newsViewModel.news.collect {
-                    newsAdapter?.submitList(it)
-                }
-            }
-        }
 
         newsViewModel.isLoading.observe(viewLifecycleOwner) {
             if (!it) {
@@ -75,11 +68,13 @@ class TabFragment : Fragment() {
                 loadingDialog?.show()
             }
         }
-    }
 
-    override fun onResume() {
-        super.onResume()
-        source?.let { newsSource ->
+        source?.let {  newsSource ->
+            newsJob = lifecycleScope.launchWhenResumed {
+                newsViewModel.news.collect {
+                    newsAdapter?.submitList(it)
+                }
+            }
 
             if (newsSource != NewsSources.ALL) {
                 newsViewModel.loadNews(newsSource)
@@ -88,8 +83,9 @@ class TabFragment : Fragment() {
                 val sources = NewsSources.getList(sharedPref, context)
                 newsViewModel.loadNews(sources)
             }
-
         }
+
+
     }
 
     override fun onPause() {
