@@ -6,15 +6,15 @@
     <data>
         <variable
             name="profileViewModel"
-            type="ru.example.andoid_app_news.model.viewmodel.ProfileViewModel" />
-        <variable name="context" type="ru.example.andoid_app_news.ui.profile.ProfileActivity"/>
+            type="ru.example.andoid_app_news.ui.viewmodel.ProfileViewModel" />
+        <variable name="context" type="ru.example.andoid_app_news.ui.activity.ProfileActivity"/>
         <import type="android.view.View"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.profile.ProfileActivity">
+        tools:context=".ui.activity.ProfileActivity">
 
         <ImageView
             android:id="@+id/arrowBackProfile"

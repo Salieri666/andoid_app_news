@@ -13,9 +13,9 @@ enum class NewsSources(val id: Int) : Serializable {
     NPLUS1(R.string.nplus_news);
 
     companion object {
-        fun getList(sharedPref: SharedPreferences, context: Context?): List<NewsSources> {
+        fun getList(sharedPref: SharedPreferences, context: Context?): MutableList<NewsSources> {
             val array = enumValues<NewsSources>()
-            val result = arrayListOf<NewsSources>()
+            val result = mutableListOf<NewsSources>()
             for (el in array) {
                 if (el != ALL && sharedPref.getBoolean(context?.getString(el.id), true))
                     result.add(el)

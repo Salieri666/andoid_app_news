@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
-import ru.example.andoid_app_news.model.data.BookmarkEntity
+import ru.example.andoid_app_news.model.entity.BookmarkEntity
 
 @Dao
 interface BookmarksDao {

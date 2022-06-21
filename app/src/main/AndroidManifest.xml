@@ -21,14 +21,14 @@
             android:value="AIzaSyALHLeco0r-ua9NF60Fr0QbsKPz24qoCVc" />
 
         <activity
-            android:name=".ui.map.MapsActivity"
+            android:name=".ui.activity.MapsActivity"
             android:exported="false"
             android:label="@string/title_activity_maps" />
         <activity
-            android:name=".ui.profile.ProfileActivity"
+            android:name=".ui.activity.ProfileActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.newsDescription.NewsActivity"
+            android:name=".ui.activity.NewsActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

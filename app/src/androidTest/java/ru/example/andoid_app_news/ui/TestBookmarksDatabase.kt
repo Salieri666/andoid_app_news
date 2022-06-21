@@ -13,7 +13,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import ru.example.andoid_app_news.dao.BookmarksDao
 import ru.example.andoid_app_news.instance.BookmarkRoomDatabase
-import ru.example.andoid_app_news.model.data.BookmarkEntity
+import ru.example.andoid_app_news.model.entity.BookmarkEntity
 import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)

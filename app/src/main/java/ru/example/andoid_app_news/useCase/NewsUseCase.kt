@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 import okhttp3.ResponseBody
+import ru.example.andoid_app_news.model.data.News
 import ru.example.andoid_app_news.model.data.NewsSources
 import ru.example.andoid_app_news.model.data.ResultData
-import ru.example.andoid_app_news.model.ui.News
 import ru.example.andoid_app_news.repository.NewsRepo
-import ru.example.andoid_app_news.service.rss.*
+import ru.example.andoid_app_news.rss.*
 
 class NewsUseCase(
     private val newsRepo: NewsRepo,
