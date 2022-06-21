@@ -1,37 +1,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="@string/messages_header">
-
-        <PreferenceScreen
-            app:allowDividerBelow="true"
-            app:key="screen_profile_preferences"
-            app:summary="@string/settings_profile_summary"
-            app:title="@string/signature_title"
-            app:useSimpleSummaryProvider="true">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:targetClass="ru.example.andoid_app_news.ui.profile.ProfileActivity"
-                android:targetPackage="ru.example.andoid_app_news" />
-
-        </PreferenceScreen>
-
-    </PreferenceCategory>
-
-
-    <PreferenceScreen
-        app:allowDividerAbove="true"
-        app:allowDividerBelow="true"
-        app:key="screen_map_preferences"
-        app:title="@string/settings_map"
-        app:useSimpleSummaryProvider="true">
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:targetClass="ru.example.andoid_app_news.ui.map.MapsActivity"
-            android:targetPackage="ru.example.andoid_app_news" />
-
-    </PreferenceScreen>
-
     <PreferenceCategory app:title="@string/news_sources">
 
         <SwitchPreferenceCompat

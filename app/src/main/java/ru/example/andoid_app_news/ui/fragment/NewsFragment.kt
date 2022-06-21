@@ -39,7 +39,9 @@ class NewsFragment : Fragment() {
 
     override fun onDestroyView() {
         tabLayoutMediator?.detach()
-        binding?.pager?.adapter = null
+        tabLayoutMediator = null
+        adapter = null
+        binding = null
         super.onDestroyView()
     }
 
@@ -49,8 +51,8 @@ class NewsFragment : Fragment() {
     }
 
     private fun prepareSourceList() : List<NewsSources> {
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-        val sources = NewsSources.getList(sharedPref, context)
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val sources = NewsSources.getList(sharedPref, requireContext())
         sources.add(0, NewsSources.ALL)
         return sources
     }

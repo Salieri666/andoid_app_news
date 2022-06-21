@@ -2,10 +2,12 @@ package ru.example.andoid_app_news.model.data
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import ru.example.andoid_app_news.R
-import java.io.Serializable
 
-enum class NewsSources(val id: Int) : Serializable {
+@Parcelize
+enum class NewsSources(val id: Int) : Parcelable {
     ALL(R.string.all),
     LENTA(R.string.lenta_title),
     RBC(R.string.rbc_title),

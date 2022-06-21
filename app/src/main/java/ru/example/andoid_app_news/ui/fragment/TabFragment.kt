@@ -18,7 +18,6 @@ import ru.example.andoid_app_news.model.data.NewsSources
 import ru.example.andoid_app_news.repository.NewsRepo
 import ru.example.andoid_app_news.ui.activity.NewsActivity
 import ru.example.andoid_app_news.ui.adapter.RecyclerNewsAdapter
-import ru.example.andoid_app_news.ui.dialogs.LoadingDialog
 import ru.example.andoid_app_news.ui.viewmodel.NewsViewModel
 import ru.example.andoid_app_news.ui.viewmodel.NewsViewModelFactory
 import ru.example.andoid_app_news.useCase.NewsUseCase
@@ -37,14 +36,13 @@ class TabFragment : Fragment() {
     private var newsAdapter: RecyclerNewsAdapter? = null
     private var binding: FragmentTabBinding? = null
     private var source: NewsSources? = null
-    private var loadingDialog: LoadingDialog? = null
     private var newsJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
-            source = it.getSerializable(SOURCE) as NewsSources?
+            source = it.getParcelable(SOURCE) as NewsSources?
         }
     }
 
@@ -55,28 +53,28 @@ class TabFragment : Fragment() {
         binding = FragmentTabBinding.inflate(inflater, container, false)
 
         setupRecycler()
-        loadingDialog = LoadingDialog(inflater, context, container)
 
         return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        setupLoadingDialog()
+        setupLoadingIcon()
         setupLoadNews()
     }
 
     override fun onPause() {
         super.onPause()
         newsJob?.cancel()
-        loadingDialog?.close()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         newsJob?.cancel()
         newsViewModel.isLoading.removeObservers(viewLifecycleOwner)
+        binding = null
+        newsJob = null
+        newsAdapter = null
     }
 
     companion object {
@@ -84,7 +82,7 @@ class TabFragment : Fragment() {
         fun newInstance(source: NewsSources) =
             TabFragment().apply {
                 arguments = Bundle().apply {
-                    putSerializable(SOURCE, source)
+                    putParcelable(SOURCE, source)
                 }
             }
     }
@@ -107,12 +105,12 @@ class TabFragment : Fragment() {
         }
     }
 
-    private fun setupLoadingDialog() {
+    private fun setupLoadingIcon() {
         newsViewModel.isLoading.observe(viewLifecycleOwner) {
-            if (!it) {
-                loadingDialog?.close()
+            if (it) {
+                binding?.loadingNewsIcon?.visibility = View.VISIBLE
             } else {
-                loadingDialog?.show()
+                binding?.loadingNewsIcon?.visibility = View.GONE
             }
         }
     }
@@ -128,8 +126,8 @@ class TabFragment : Fragment() {
             if (newsSource != NewsSources.ALL) {
                 newsViewModel.loadNews(newsSource)
             } else {
-                val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-                val sources = NewsSources.getList(sharedPref, context)
+                val sharedPref = PreferenceManager.getDefaultSharedPreferences(requireContext())
+                val sources = NewsSources.getList(sharedPref, requireContext())
                 newsViewModel.loadNews(sources)
             }
         }

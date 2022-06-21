@@ -2,9 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.example.andoid_app_news">
 
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".MainApplication"
         android:allowBackup="false"
@@ -15,18 +14,6 @@
         android:theme="@style/Theme.NewsApp"
         android:usesCleartextTraffic="true">
 
-
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyALHLeco0r-ua9NF60Fr0QbsKPz24qoCVc" />
-
-        <activity
-            android:name=".ui.activity.MapsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_maps" />
-        <activity
-            android:name=".ui.activity.ProfileActivity"
-            android:exported="false" />
         <activity
             android:name=".ui.activity.NewsActivity"
             android:exported="false" />
@@ -40,5 +27,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>
