@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.example.andoid_app_news.MainApplication
 import ru.example.andoid_app_news.databinding.FragmentBookmarksBinding
@@ -22,7 +23,7 @@ class BookmarksFragment : Fragment() {
     private var newsAdapter: RecyclerNewsAdapter? = null
     private var binding: FragmentBookmarksBinding? = null
 
-    private val newsViewModel: BookmarksViewModel by viewModels {
+    private val bookmarksViewModel: BookmarksViewModel by viewModels {
         BookmarksViewModelFactory(BookmarksUseCase((activity?.application as MainApplication).bookmarksRepo))
     }
 
@@ -42,16 +43,25 @@ class BookmarksFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        newsViewModel.allBookmarks.observe(viewLifecycleOwner) {
-            it?.let {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            bookmarksViewModel.allBookmarks.collect {
                 newsAdapter?.submitList(it)
             }
         }
+
+        bookmarksViewModel.loadBookmarks()
+
+        /*bookmarksViewModel.allBookmarks
+            .flowWithLifecycle(viewLifecycleOwner.lifecycle, Lifecycle.State.STARTED)
+            .onEach { state -> newsAdapter?.submitList(state) }
+            .launchIn(viewLifecycleOwner.lifecycleScope)*/
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
-        newsViewModel.allBookmarks.removeObservers(viewLifecycleOwner)
+        newsAdapter = null
+        binding = null
     }
 
     companion object {
@@ -64,7 +74,9 @@ class BookmarksFragment : Fragment() {
         newsAdapter?.setOnItemClickListener(object : RecyclerNewsAdapter.OnItemClickListener {
             override fun onClick(position: Int) {
                 val intent = Intent(requireContext(), NewsActivity::class.java)
-                intent.putExtra(NewsActivity.NEWS, newsViewModel.allBookmarks.value?.get(position))
+                intent.putExtra(NewsActivity.NEWS,
+                    bookmarksViewModel.allBookmarks.value[position]
+                )
                 startActivity(intent)
             }
         })

@@ -6,11 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragment.TabFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_news_tab"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:listitem="@layout/news_element" />
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_news_tab"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/news_element" />
+
+
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ProgressBar
         android:id="@+id/loadingNewsIcon"
@@ -21,6 +30,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

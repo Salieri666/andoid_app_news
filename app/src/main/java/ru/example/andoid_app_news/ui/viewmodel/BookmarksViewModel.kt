@@ -1,16 +1,29 @@
 package ru.example.andoid_app_news.ui.viewmodel
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import ru.example.andoid_app_news.model.data.News
 import ru.example.andoid_app_news.useCase.BookmarksUseCase
 
-class BookmarksViewModel(private val bookmarksUseCase: BookmarksUseCase) : ViewModel() {
+class BookmarksViewModel(private var bookmarksUseCase: BookmarksUseCase) : BaseViewModel() {
 
-    val allBookmarks: LiveData<List<News>> = bookmarksUseCase.getAll().asLiveData()
+    private val _allBookmarks = MutableStateFlow(emptyList<News>())
 
+    val allBookmarks: StateFlow<List<News>> = _allBookmarks
+
+    //TODO Paging
+    fun loadBookmarks() {
+        bookmarksUseCase.getAll()
+            .onEach {
+                _allBookmarks.value = it
+            }
+            .launchIn(viewModelScope)
+
+    }
 }
 
 class BookmarksViewModelFactory(private val bookmarksUseCase: BookmarksUseCase) : ViewModelProvider.Factory {

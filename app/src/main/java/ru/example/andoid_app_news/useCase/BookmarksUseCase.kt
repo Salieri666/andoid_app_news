@@ -7,7 +7,7 @@ import ru.example.andoid_app_news.repository.BookmarksRepo
 
 class BookmarksUseCase(private val bookmarksRepo: BookmarksRepo) {
 
-    fun getAll() : Flow<List<News>>  {
+    fun getAll(): Flow<List<News>> {
         return bookmarksRepo.allBookmarks.map { list ->
             list.map {
                 News.toNews(it)
@@ -15,7 +15,7 @@ class BookmarksUseCase(private val bookmarksRepo: BookmarksRepo) {
         }
     }
 
-    fun getByUrl(url : String): Flow<News> {
+    fun getByUrl(url: String): Flow<News> {
         return bookmarksRepo.getByUrl(url).map {
             if (it != null) News.toNews(it) else News()
         }

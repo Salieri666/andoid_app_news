@@ -38,11 +38,11 @@ class NewsFragment : Fragment() {
 
 
     override fun onDestroyView() {
+        super.onDestroyView()
         tabLayoutMediator?.detach()
         tabLayoutMediator = null
         adapter = null
         binding = null
-        super.onDestroyView()
     }
 
     companion object {

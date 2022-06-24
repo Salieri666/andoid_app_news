@@ -56,6 +56,7 @@ class RecyclerNewsAdapter : ListAdapter<News, RecyclerNewsAdapter.NewsHolder>(As
         return NewsHolder(itemView, mListener)
     }
 
+    //TODO replace by Glide and reduce memory consumption
     override fun onBindViewHolder(holder: NewsHolder, position: Int) {
         val item: News = getItem(position)
 

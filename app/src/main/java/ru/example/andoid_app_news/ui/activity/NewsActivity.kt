@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.squareup.picasso.Picasso
 import ru.example.andoid_app_news.MainApplication
 import ru.example.andoid_app_news.R
@@ -38,9 +39,25 @@ class NewsActivity : AppCompatActivity() {
         context: Context,
         attrs: AttributeSet
     ): View? {
+        setupBackArrow()
+        fillNewsData()
+        checkIfBookmarkExists()
+        return super.onCreateView(parent, name, context, attrs)
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        newsBinding = null
+    }
+
+    private fun setupBackArrow() {
         newsBinding?.arrowBack?.setOnClickListener {
             onBackPressed()
         }
+    }
+
+    private fun fillNewsData() {
         newsBinding?.let {
             newsItem = intent.extras?.getParcelable(NEWS)
             it.newsTitleCommon.text = newsItem?.title
@@ -54,24 +71,29 @@ class NewsActivity : AppCompatActivity() {
                 Picasso.get().load(newsItem?.img).into(it.imageNews)
             }
         }
+    }
 
+    private fun checkIfBookmarkExists() {
         newsItem?.let { _newsItem ->
-            currentNewsViewModel.getNewsByUrl(_newsItem.url).observe(this) { dbNews ->
-                if (dbNews.id != null) {
-                    newsBinding?.bookmarksNews?.setImageResource(R.drawable.ic_baseline_bookmark_24)
-                    newsBinding?.bookmarksNews?.setOnClickListener {
-                        currentNewsViewModel.remove(dbNews.id)
-                    }
-                } else {
-                    newsBinding?.bookmarksNews?.setImageResource(R.drawable.ic_baseline_bookmark_border_24)
-                    newsBinding?.bookmarksNews?.setOnClickListener {
-                        currentNewsViewModel.add(_newsItem)
+
+            lifecycleScope.launchWhenStarted {
+                currentNewsViewModel.selectedNews.collect { dbNews ->
+                    if (dbNews.id != null) {
+                        newsBinding?.bookmarksNews?.setImageResource(R.drawable.ic_baseline_bookmark_24)
+                        newsBinding?.bookmarksNews?.setOnClickListener {
+                            currentNewsViewModel.remove(dbNews.id)
+                        }
+                    } else {
+                        newsBinding?.bookmarksNews?.setImageResource(R.drawable.ic_baseline_bookmark_border_24)
+                        newsBinding?.bookmarksNews?.setOnClickListener {
+                            currentNewsViewModel.add(_newsItem)
+                        }
                     }
                 }
             }
-        }
 
-        return super.onCreateView(parent, name, context, attrs)
+            currentNewsViewModel.getNewsByUrl(_newsItem.url)
+        }
     }
 
     companion object {

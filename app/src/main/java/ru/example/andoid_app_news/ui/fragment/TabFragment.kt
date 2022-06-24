@@ -10,7 +10,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.coroutines.Job
 import ru.example.andoid_app_news.MainApplication
 import ru.example.andoid_app_news.api.NewsApiService
 import ru.example.andoid_app_news.databinding.FragmentTabBinding
@@ -30,13 +29,13 @@ class TabFragment : Fragment() {
         NewsViewModelFactory(
             NewsUseCase(
                 NewsRepo(NewsApiService.instance((activity?.application as MainApplication).retrofit))
-            ))
+            )
+        )
     }
 
     private var newsAdapter: RecyclerNewsAdapter? = null
     private var binding: FragmentTabBinding? = null
     private var source: NewsSources? = null
-    private var newsJob: Job? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +52,7 @@ class TabFragment : Fragment() {
         binding = FragmentTabBinding.inflate(inflater, container, false)
 
         setupRecycler()
+        setupRefresh()
 
         return binding?.root
     }
@@ -61,19 +61,15 @@ class TabFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupLoadingIcon()
         setupLoadNews()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        newsJob?.cancel()
+        setupRefreshingIcon()
+        loadNews()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        newsJob?.cancel()
         newsViewModel.isLoading.removeObservers(viewLifecycleOwner)
+        newsViewModel.isRefreshing.removeObservers(viewLifecycleOwner)
         binding = null
-        newsJob = null
         newsAdapter = null
     }
 
@@ -105,6 +101,12 @@ class TabFragment : Fragment() {
         }
     }
 
+    private fun setupRefresh() {
+        binding?.swipeRefresh?.setOnRefreshListener {
+            loadNews(true)
+        }
+    }
+
     private fun setupLoadingIcon() {
         newsViewModel.isLoading.observe(viewLifecycleOwner) {
             if (it) {
@@ -115,20 +117,28 @@ class TabFragment : Fragment() {
         }
     }
 
-    private fun setupLoadNews() {
-        source?.let {  newsSource ->
-            newsJob = lifecycleScope.launchWhenResumed {
-                newsViewModel.news.collect {
-                    newsAdapter?.submitList(it)
-                }
-            }
+    private fun setupRefreshingIcon() {
+        newsViewModel.isRefreshing.observe(viewLifecycleOwner) {
+            binding?.swipeRefresh?.isRefreshing = it
+        }
+    }
 
+    private fun setupLoadNews() {
+        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
+            newsViewModel.news.collect {
+                newsAdapter?.submitList(it)
+            }
+        }
+    }
+
+    private fun loadNews(isRefresh: Boolean = false) {
+        source?.let { newsSource ->
             if (newsSource != NewsSources.ALL) {
-                newsViewModel.loadNews(newsSource)
+                newsViewModel.loadNews(newsSource, isRefresh)
             } else {
                 val sharedPref = PreferenceManager.getDefaultSharedPreferences(requireContext())
                 val sources = NewsSources.getList(sharedPref, requireContext())
-                newsViewModel.loadNews(sources)
+                newsViewModel.loadNews(sources, isRefresh)
             }
         }
     }
