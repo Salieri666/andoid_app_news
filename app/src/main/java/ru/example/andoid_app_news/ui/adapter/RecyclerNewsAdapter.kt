@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.squareup.picasso.Picasso
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DecodeFormat
 import ru.example.andoid_app_news.R
 import ru.example.andoid_app_news.model.data.News
 
@@ -17,15 +18,7 @@ class RecyclerNewsAdapter : ListAdapter<News, RecyclerNewsAdapter.NewsHolder>(As
     DiffCallback()
 ).build()) {
 
-    interface OnItemClickListener {
-        fun onClick(position: Int)
-    }
-
-    private var mListener: OnItemClickListener? = null
-
-    fun setOnItemClickListener(listener: OnItemClickListener) {
-        mListener = listener
-    }
+    var itemClickListener: ( (Int) -> Unit )? = null
 
     private class DiffCallback : DiffUtil.ItemCallback<News>() {
 
@@ -37,26 +30,20 @@ class RecyclerNewsAdapter : ListAdapter<News, RecyclerNewsAdapter.NewsHolder>(As
 
     }
 
-    class NewsHolder(itemView: View, listener: OnItemClickListener?) : RecyclerView.ViewHolder(itemView) {
+    inner class NewsHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val view = itemView
         val title: TextView = itemView.findViewById(R.id.news_title)
         val source: TextView = itemView.findViewById(R.id.news_source)
         val date: TextView = itemView.findViewById(R.id.news_date)
         val imgView: ImageView = itemView.findViewById(R.id.newsImageView)
-
-        init {
-            itemView.setOnClickListener {
-                listener?.onClick(adapterPosition)
-            }
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsHolder {
         val itemView =
             LayoutInflater.from(parent.context).inflate(R.layout.news_element, parent, false)
-        return NewsHolder(itemView, mListener)
+        return NewsHolder(itemView)
     }
 
-    //TODO replace by Glide and reduce memory consumption
     override fun onBindViewHolder(holder: NewsHolder, position: Int) {
         val item: News = getItem(position)
 
@@ -64,10 +51,20 @@ class RecyclerNewsAdapter : ListAdapter<News, RecyclerNewsAdapter.NewsHolder>(As
         holder.source.text = item.source
         holder.date.text = item.date
 
+        itemClickListener?.let { itemListener ->
+            holder.view.setOnClickListener {
+                itemListener(position)
+            }
+        }
         if (item.img == null)
             holder.imgView.visibility = View.GONE
         else {
-            Picasso.get().load(item.img).into(holder.imgView)
+            Glide.with(holder.imgView.context)
+                .asBitmap()
+                .format(DecodeFormat.PREFER_RGB_565)
+                .centerCrop()
+                .load(item.img)
+                .into(holder.imgView)
         }
     }
 

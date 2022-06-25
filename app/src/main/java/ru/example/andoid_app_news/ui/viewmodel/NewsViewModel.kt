@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import ru.example.andoid_app_news.model.data.News
 import ru.example.andoid_app_news.model.data.NewsSources
 import ru.example.andoid_app_news.model.data.ResultData
@@ -22,24 +23,16 @@ class NewsViewModel(private val newsUseCase: NewsUseCase) : BaseViewModel() {
 
 
     fun loadNews(source: NewsSources, isRefresh: Boolean) {
-        if (isRefresh) {
-            loadNewsToValue(_isRefreshing) {
-                load(source)
-            }
-        } else {
-            loadNewsToValue(_isLoading) {
-                load(source)
+        viewModelScope.launch {
+            loadNewsToValue(if (isRefresh) _isRefreshing else _isLoading) {
+                newsUseCase.getNews(source)
             }
         }
     }
 
     fun loadNews(sources: List<NewsSources>, isRefresh: Boolean) {
-        if (isRefresh) {
-            loadNewsToValue(_isRefreshing) {
-                newsUseCase.getAllNewsByList(sources)
-            }
-        } else {
-            loadNewsToValue(_isLoading) {
+        viewModelScope.launch {
+            loadNewsToValue(if (isRefresh) _isRefreshing else _isLoading) {
                 newsUseCase.getAllNewsByList(sources)
             }
         }
@@ -62,16 +55,6 @@ class NewsViewModel(private val newsUseCase: NewsUseCase) : BaseViewModel() {
                 }
             }
             .launchIn(viewModelScope)
-    }
-
-    private fun load(source: NewsSources): Flow<ResultData<List<News>>> {
-        return when (source) {
-            NewsSources.LENTA -> newsUseCase.getNews(NewsSources.LENTA)
-            NewsSources.RBC -> newsUseCase.getNews(NewsSources.RBC)
-            NewsSources.TECH_NEWS -> newsUseCase.getNews(NewsSources.TECH_NEWS)
-            NewsSources.NPLUS1 -> newsUseCase.getNews(NewsSources.NPLUS1)
-            else -> emptyFlow()
-        }
     }
 }
 

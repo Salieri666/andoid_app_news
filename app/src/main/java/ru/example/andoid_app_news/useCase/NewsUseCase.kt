@@ -2,16 +2,15 @@ package ru.example.andoid_app_news.useCase
 
 import android.util.Log
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 import okhttp3.ResponseBody
 import ru.example.andoid_app_news.model.data.News
 import ru.example.andoid_app_news.model.data.NewsSources
 import ru.example.andoid_app_news.model.data.ResultData
 import ru.example.andoid_app_news.repository.NewsRepo
 import ru.example.andoid_app_news.rss.*
+
+private const val ERROR_TYPE = "ERROR_NEWS_USE_CASE"
 
 class NewsUseCase(
     private val newsRepo: NewsRepo,
@@ -20,18 +19,17 @@ class NewsUseCase(
 
     fun getNews(type: NewsSources): Flow<ResultData<List<News>>> = flow {
 
-        val response = getNewsBySourceType(type)
+        val response = newsRepo.getNewsBySourceType(type)
         val res = parseNews(response, type)
-        emit(
-            ResultData(ResultData.Status.SUCCESSES, res)
-        )
+
+        emit(ResultData(ResultData.Status.SUCCESSES, res))
 
     }.onStart {
         emit(ResultData(ResultData.Status.LOADING))
     }.catch {
-        Log.e("Error_NEWS_APP", it.localizedMessage, it)
+        Log.e(ERROR_TYPE, it.localizedMessage, it)
         ResultData(ResultData.Status.FAILED, emptyList<News>())
-    }
+    }.flowOn(defaultDispatcher)
 
     fun getAllNewsByList(list: List<NewsSources>): Flow<ResultData<List<News>>> = flow {
 
@@ -40,34 +38,22 @@ class NewsUseCase(
 
             list.mapIndexed  { _, source ->
                 async {
-                    news.addAll(parseNews(getNewsBySourceType(source), source))
+                    val response = newsRepo.getNewsBySourceType(source)
+                    news.addAll(parseNews(response, source))
                 }
             }.awaitAll()
 
-            withContext(defaultDispatcher) {
-                news.sortByDescending { el -> el.sourceDate }
-            }
-
+            news.sortByDescending { el -> el.sourceDate }
         }
         emit(ResultData(ResultData.Status.SUCCESSES, news as List<News>))
 
     }.onStart {
         emit(ResultData(ResultData.Status.LOADING))
     }.catch {
-        Log.e("Error_NEWS_APP", it.localizedMessage, it)
+        Log.e(ERROR_TYPE, it.localizedMessage, it)
         ResultData(ResultData.Status.FAILED, emptyList<News>())
-    }
+    }.flowOn(defaultDispatcher)
 
-
-    private suspend fun getNewsBySourceType(type: NewsSources) : ResponseBody {
-        return when (type) {
-            NewsSources.LENTA -> newsRepo.loadLentaNews()
-            NewsSources.RBC -> newsRepo.loadRbcNews()
-            NewsSources.TECH_NEWS -> newsRepo.loadTechNews()
-            NewsSources.NPLUS1 -> newsRepo.loadNplusNews()
-            else -> throw IllegalArgumentException("The type -> $type not founded!")
-        }
-    }
 
     private fun getParserBySourceType(type: NewsSources) : AbstractRssParser {
         return when (type) {
@@ -75,19 +61,20 @@ class NewsUseCase(
             NewsSources.RBC -> RbcRssParser()
             NewsSources.TECH_NEWS -> TechRssParser()
             NewsSources.NPLUS1 -> NplusOneRssParser()
-            else -> throw IllegalArgumentException("The type -> $type for parser not founded!")
+            else -> throw IllegalArgumentException("The parser type -> $type not founded!")
         }
     }
 
-    private suspend fun parseNews(responseBody: ResponseBody, type: NewsSources) : List<News> = withContext(defaultDispatcher) {
+
+    private fun parseNews(responseBody: ResponseBody, type: NewsSources): List<News> {
         val resultList = arrayListOf<News>()
-        val parser = getParserBySourceType(type)
-        kotlin.runCatching {
+        try {
+            val parser = getParserBySourceType(type)
             Log.v("Context1", "Parsing...  " + Thread.currentThread().name)
             resultList.addAll(parser.parse(responseBody.byteStream()).items ?: emptyList())
+        } catch (e: Exception) {
+            Log.e(ERROR_TYPE, e.localizedMessage, e)
         }
-        return@withContext resultList
+        return resultList
     }
-
-
 }

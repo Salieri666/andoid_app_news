@@ -69,17 +69,17 @@ class BookmarksFragment : Fragment() {
         fun newInstance() = BookmarksFragment()
     }
 
+    private fun onNewsClick(position: Int) {
+        val intent = Intent(requireContext(), NewsActivity::class.java)
+        intent.putExtra(NewsActivity.NEWS,
+            bookmarksViewModel.allBookmarks.value[position]
+        )
+        startActivity(intent)
+    }
+
     private fun setupRecycler() {
         newsAdapter = RecyclerNewsAdapter()
-        newsAdapter?.setOnItemClickListener(object : RecyclerNewsAdapter.OnItemClickListener {
-            override fun onClick(position: Int) {
-                val intent = Intent(requireContext(), NewsActivity::class.java)
-                intent.putExtra(NewsActivity.NEWS,
-                    bookmarksViewModel.allBookmarks.value[position]
-                )
-                startActivity(intent)
-            }
-        })
+        newsAdapter?.itemClickListener = ::onNewsClick
 
         binding?.let{
             it.recyclerNews.apply {
