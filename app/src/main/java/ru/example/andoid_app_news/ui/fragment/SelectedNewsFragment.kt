@@ -8,7 +8,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.squareup.picasso.Picasso
+import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DecodeFormat
 import ru.example.andoid_app_news.MainApplication
 import ru.example.andoid_app_news.R
 import ru.example.andoid_app_news.databinding.FragmentSelectedNewsBinding
@@ -40,7 +42,7 @@ class SelectedNewsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         newsBinding = FragmentSelectedNewsBinding.inflate(inflater, container, false)
-        //setupBackArrow()
+        setupBackArrow()
         fillNewsData()
         checkIfBookmarkExists()
         return newsBinding?.root
@@ -49,25 +51,31 @@ class SelectedNewsFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         newsBinding = null
+        newsItem = null
     }
 
-    /*private fun setupBackArrow() {
+    private fun setupBackArrow() {
         newsBinding?.arrowBack?.setOnClickListener {
-            //onBackPressed()
+            findNavController().navigateUp()
         }
-    }*/
+    }
 
     private fun fillNewsData() {
         newsBinding?.let {
             it.newsTitleCommon.text = newsItem?.title
-            it.newsDescription.text = Html.fromHtml(newsItem?.description ?: "", Html.FROM_HTML_MODE_LEGACY)
+            it.newsDescription.text = Html.fromHtml(newsItem?.description ?: "", Html.FROM_HTML_MODE_COMPACT)
             it.newsDateActivity.text = newsItem?.date
             it.newsSourceActivity.text = newsItem?.source
 
             if (newsItem?.img == null)
                 it.imageNews.visibility = View.GONE
             else {
-                Picasso.get().load(newsItem?.img).into(it.imageNews)
+                Glide.with(requireContext())
+                    .asBitmap()
+                    .format(DecodeFormat.PREFER_RGB_565)
+                    .centerCrop()
+                    .load(newsItem?.img)
+                    .into(it.imageNews)
             }
         }
     }

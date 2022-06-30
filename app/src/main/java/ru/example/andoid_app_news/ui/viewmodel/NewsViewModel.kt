@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import ru.example.andoid_app_news.model.data.News
 import ru.example.andoid_app_news.model.data.NewsSources
 import ru.example.andoid_app_news.model.data.ResultData
@@ -23,18 +22,14 @@ class NewsViewModel(private val newsUseCase: NewsUseCase) : BaseViewModel() {
 
 
     fun loadNews(source: NewsSources, isRefresh: Boolean) {
-        viewModelScope.launch {
-            loadNewsToValue(if (isRefresh) _isRefreshing else _isLoading) {
-                newsUseCase.getNews(source)
-            }
+        loadNewsToValue(if (isRefresh) _isRefreshing else _isLoading) {
+            newsUseCase.getNews(source)
         }
     }
 
     fun loadNews(sources: List<NewsSources>, isRefresh: Boolean) {
-        viewModelScope.launch {
-            loadNewsToValue(if (isRefresh) _isRefreshing else _isLoading) {
-                newsUseCase.getAllNewsByList(sources)
-            }
+        loadNewsToValue(if (isRefresh) _isRefreshing else _isLoading) {
+            newsUseCase.getAllNewsByList(sources)
         }
     }
 
