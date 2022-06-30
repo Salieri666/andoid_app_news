@@ -1,65 +1,64 @@
-package ru.example.andoid_app_news.ui.activity
+package ru.example.andoid_app_news.ui.fragment
 
-import android.content.Context
 import android.os.Bundle
 import android.text.Html
-import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
-import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.squareup.picasso.Picasso
 import ru.example.andoid_app_news.MainApplication
 import ru.example.andoid_app_news.R
-import ru.example.andoid_app_news.databinding.ActivityNewsBinding
+import ru.example.andoid_app_news.databinding.FragmentSelectedNewsBinding
 import ru.example.andoid_app_news.model.data.News
 import ru.example.andoid_app_news.ui.viewmodel.CurrentNewsViewModel
 import ru.example.andoid_app_news.ui.viewmodel.CurrentNewsViewModelFactory
 import ru.example.andoid_app_news.useCase.BookmarksUseCase
 
+private const val SELECTED_NEWS = "SELECTED_NEWS"
 
-class NewsActivity : AppCompatActivity() {
 
+class SelectedNewsFragment : Fragment() {
     private val currentNewsViewModel: CurrentNewsViewModel by viewModels {
-        CurrentNewsViewModelFactory(BookmarksUseCase((application as MainApplication).bookmarksRepo))
+        CurrentNewsViewModelFactory(BookmarksUseCase((activity?.application as MainApplication).bookmarksRepo))
     }
 
-    private var newsBinding: ActivityNewsBinding? = null
-    private var newsItem: News? =  null
+    private var newsItem: News? = null
+    private var newsBinding: FragmentSelectedNewsBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        newsBinding = ActivityNewsBinding.inflate(layoutInflater)
-        setContentView(newsBinding?.root)
+        arguments?.let {
+            newsItem = it.getParcelable(SELECTED_NEWS)
+        }
     }
 
     override fun onCreateView(
-        parent: View?,
-        name: String,
-        context: Context,
-        attrs: AttributeSet
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
-        setupBackArrow()
+        newsBinding = FragmentSelectedNewsBinding.inflate(inflater, container, false)
+        //setupBackArrow()
         fillNewsData()
         checkIfBookmarkExists()
-        return super.onCreateView(parent, name, context, attrs)
+        return newsBinding?.root
     }
-
 
     override fun onDestroy() {
         super.onDestroy()
         newsBinding = null
     }
 
-    private fun setupBackArrow() {
+    /*private fun setupBackArrow() {
         newsBinding?.arrowBack?.setOnClickListener {
-            onBackPressed()
+            //onBackPressed()
         }
-    }
+    }*/
 
     private fun fillNewsData() {
         newsBinding?.let {
-            newsItem = intent.extras?.getParcelable(NEWS)
             it.newsTitleCommon.text = newsItem?.title
             it.newsDescription.text = Html.fromHtml(newsItem?.description ?: "", Html.FROM_HTML_MODE_LEGACY)
             it.newsDateActivity.text = newsItem?.date
@@ -97,6 +96,13 @@ class NewsActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val NEWS = "NEWS"
+
+        @JvmStatic
+        fun newInstance(selectedNews: String) =
+            SelectedNewsFragment().apply {
+                arguments = Bundle().apply {
+                    putString(SELECTED_NEWS, selectedNews)
+                }
+            }
     }
 }

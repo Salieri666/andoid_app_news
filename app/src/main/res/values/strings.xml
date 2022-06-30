@@ -39,5 +39,4 @@
     <string name="all">All</string>
     <string name="wrongCredentials">Your credentials is wrong</string>
     <string name="loginExists">This login already exists</string>
-    <string name="title_activity_maps">MapsActivity</string>
 </resources>

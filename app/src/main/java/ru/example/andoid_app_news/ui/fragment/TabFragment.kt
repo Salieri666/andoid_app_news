@@ -1,21 +1,22 @@
 package ru.example.andoid_app_news.ui.fragment
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.example.andoid_app_news.MainApplication
+import ru.example.andoid_app_news.R
 import ru.example.andoid_app_news.api.NewsApiService
 import ru.example.andoid_app_news.databinding.FragmentTabBinding
 import ru.example.andoid_app_news.model.data.NewsSources
 import ru.example.andoid_app_news.repository.NewsRepo
-import ru.example.andoid_app_news.ui.activity.NewsActivity
 import ru.example.andoid_app_news.ui.adapter.RecyclerNewsAdapter
 import ru.example.andoid_app_news.ui.viewmodel.NewsViewModel
 import ru.example.andoid_app_news.ui.viewmodel.NewsViewModelFactory
@@ -84,9 +85,13 @@ class TabFragment : Fragment() {
     }
 
     private fun onNewsClick(position: Int) {
-        val intent = Intent(requireContext(), NewsActivity::class.java)
+        /*val intent = Intent(requireContext(), NewsActivity::class.java)
         intent.putExtra(NewsActivity.NEWS, newsViewModel.news.value[position])
-        startActivity(intent)
+        startActivity(intent)*/
+
+        val selectedNews = newsViewModel.news.value[position]
+        val bundle = bundleOf("SELECTED_NEWS" to selectedNews)
+        findNavController().navigate(R.id.action_newsFragment_to_selectedNewsFragment2, bundle)
     }
 
 

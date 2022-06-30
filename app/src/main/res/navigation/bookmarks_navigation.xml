@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bookmarks_navigation"
+    app:startDestination="@id/bookmarksFragment">
+
+    <fragment
+        android:id="@+id/bookmarksFragment"
+        android:name="ru.example.andoid_app_news.ui.fragment.BookmarksFragment"
+        android:label="fragment_bookmarks"
+        tools:layout="@layout/fragment_bookmarks" >
+        <action
+            android:id="@+id/action_bookmarksFragment_to_selectedNewsFragment"
+            app:destination="@id/selectedNewsFragment" >
+            <argument
+                android:name="SELECTED_NEWS"
+                app:argType="ru.example.andoid_app_news.model.data.News" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/selectedNewsFragment"
+        android:name="ru.example.andoid_app_news.ui.fragment.SelectedNewsFragment"
+        android:label="fragment_selected_news"
+        tools:layout="@layout/fragment_selected_news" />
+</navigation>

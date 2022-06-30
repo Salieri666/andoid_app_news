@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/newsFragment"
+        android:id="@+id/news_navigation"
         android:title="@string/news_navigation"
         android:icon="@drawable/ic_baseline_menu_book_24"/>
     <item
-        android:id="@+id/bookmarksFragment"
+        android:id="@+id/bookmarks_navigation"
         android:title="@string/bookmarks_navigation"
         android:icon="@drawable/ic_baseline_bookmark_border_24"/>
     <item
