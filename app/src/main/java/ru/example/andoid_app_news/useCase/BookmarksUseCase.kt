@@ -4,11 +4,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import ru.example.andoid_app_news.model.data.News
 import ru.example.andoid_app_news.repository.BookmarksRepo
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class BookmarksUseCase(private val bookmarksRepo: BookmarksRepo) {
+@Singleton
+class BookmarksUseCase @Inject constructor(private val bookmarksRepo: BookmarksRepo) {
 
     fun getAll(): Flow<List<News>> {
-        return bookmarksRepo.allBookmarks.map { list ->
+        return bookmarksRepo.allBookmarks().map { list ->
             list.map {
                 News.toNews(it)
             }

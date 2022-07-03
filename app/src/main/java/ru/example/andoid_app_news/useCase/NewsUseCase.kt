@@ -9,13 +9,17 @@ import ru.example.andoid_app_news.model.data.NewsSources
 import ru.example.andoid_app_news.model.data.ResultData
 import ru.example.andoid_app_news.repository.NewsRepo
 import ru.example.andoid_app_news.rss.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
 private const val ERROR_TYPE = "ERROR_NEWS_USE_CASE"
 
-class NewsUseCase(
-    private val newsRepo: NewsRepo,
-    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
+@Singleton
+class NewsUseCase @Inject constructor(
+    private val newsRepo: NewsRepo
 ) {
+
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 
     fun getNews(type: NewsSources): Flow<ResultData<List<News>>> = flow {
 

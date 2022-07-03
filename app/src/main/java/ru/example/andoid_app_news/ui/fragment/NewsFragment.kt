@@ -5,20 +5,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 import ru.example.andoid_app_news.databinding.FragmentNewsBinding
-
 import ru.example.andoid_app_news.model.data.NewsSources
+import ru.example.andoid_app_news.service.SettingsService
 import ru.example.andoid_app_news.ui.adapter.TabPagerAdapter
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class NewsFragment : Fragment() {
 
     private var binding: FragmentNewsBinding? = null
     private var tabLayoutMediator: TabLayoutMediator? = null
     private var adapter: TabPagerAdapter? = null
+
+    @Inject lateinit var settings: SettingsService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,10 +55,7 @@ class NewsFragment : Fragment() {
     }
 
     private fun prepareSourceList() : List<NewsSources> {
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val sources = NewsSources.getList(sharedPref, requireContext())
-        sources.add(0, NewsSources.ALL)
-        return sources
+        return settings.getAllowedNewsSources()
     }
 
     private fun setupTabs(sources: List<NewsSources>) {

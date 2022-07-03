@@ -1,7 +1,6 @@
 package ru.example.andoid_app_news.ui.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -9,8 +8,10 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import ru.example.andoid_app_news.model.data.News
 import ru.example.andoid_app_news.useCase.BookmarksUseCase
+import javax.inject.Inject
 
-class CurrentNewsViewModel(private val bookmarksUseCase: BookmarksUseCase) : BaseViewModel() {
+@HiltViewModel
+class CurrentNewsViewModel @Inject constructor(private val bookmarksUseCase: BookmarksUseCase) : BaseViewModel() {
 
     private val _selectedNews = MutableStateFlow(News())
 
@@ -31,15 +32,5 @@ class CurrentNewsViewModel(private val bookmarksUseCase: BookmarksUseCase) : Bas
 
     fun remove(id: Int) = viewModelScope.launch {
         bookmarksUseCase.remove(id)
-    }
-}
-
-class CurrentNewsViewModelFactory(private val bookmarksUseCase: BookmarksUseCase) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(CurrentNewsViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return CurrentNewsViewModel(bookmarksUseCase) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

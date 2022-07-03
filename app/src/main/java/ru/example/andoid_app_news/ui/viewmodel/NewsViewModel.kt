@@ -2,15 +2,16 @@ package ru.example.andoid_app_news.ui.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import ru.example.andoid_app_news.model.data.News
 import ru.example.andoid_app_news.model.data.NewsSources
 import ru.example.andoid_app_news.model.data.ResultData
 import ru.example.andoid_app_news.useCase.NewsUseCase
+import javax.inject.Inject
 
-class NewsViewModel(private val newsUseCase: NewsUseCase) : BaseViewModel() {
+@HiltViewModel
+class NewsViewModel @Inject constructor(private val newsUseCase: NewsUseCase) : BaseViewModel() {
 
     private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     private val _isRefreshing: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -50,15 +51,5 @@ class NewsViewModel(private val newsUseCase: NewsUseCase) : BaseViewModel() {
                 }
             }
             .launchIn(viewModelScope)
-    }
-}
-
-class NewsViewModelFactory(private val newsUseCase: NewsUseCase) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(NewsViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return NewsViewModel(newsUseCase) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

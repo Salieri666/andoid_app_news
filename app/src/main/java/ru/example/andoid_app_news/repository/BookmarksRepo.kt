@@ -7,13 +7,17 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import ru.example.andoid_app_news.dao.BookmarksDao
 import ru.example.andoid_app_news.model.entity.BookmarkEntity
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class BookmarksRepo(
-    private val bookmarksDao: BookmarksDao,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+@Singleton
+class BookmarksRepo @Inject constructor(
+    private val bookmarksDao: BookmarksDao
 ) {
 
-    val allBookmarks: Flow<List<BookmarkEntity>> = bookmarksDao.getBookmarks().flowOn(ioDispatcher)
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+
+    fun allBookmarks(): Flow<List<BookmarkEntity>> = bookmarksDao.getBookmarks().flowOn(ioDispatcher)
 
     fun getByUrl(url: String): Flow<BookmarkEntity?> = bookmarksDao.getBookmark(url).flowOn(ioDispatcher)
 

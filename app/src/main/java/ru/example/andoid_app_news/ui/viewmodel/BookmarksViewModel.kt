@@ -1,15 +1,16 @@
 package ru.example.andoid_app_news.ui.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import ru.example.andoid_app_news.model.data.News
 import ru.example.andoid_app_news.useCase.BookmarksUseCase
+import javax.inject.Inject
 
-class BookmarksViewModel(private var bookmarksUseCase: BookmarksUseCase) : BaseViewModel() {
+@HiltViewModel
+class BookmarksViewModel @Inject constructor(private var bookmarksUseCase: BookmarksUseCase) : BaseViewModel() {
 
     private val _allBookmarks = MutableStateFlow(emptyList<News>())
 
@@ -23,15 +24,5 @@ class BookmarksViewModel(private var bookmarksUseCase: BookmarksUseCase) : BaseV
             }
             .launchIn(viewModelScope)
 
-    }
-}
-
-class BookmarksViewModelFactory(private val bookmarksUseCase: BookmarksUseCase) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(BookmarksViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return BookmarksViewModel(bookmarksUseCase) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

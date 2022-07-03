@@ -4,28 +4,25 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.ResponseBody
+import retrofit2.Retrofit
 import ru.example.andoid_app_news.api.NewsApiService
 import ru.example.andoid_app_news.model.data.NewsSources
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class NewsRepo(
-    private val newsApiService: NewsApiService,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+@Singleton
+class NewsRepo @Inject constructor(
+    retrofit: Retrofit
 ) {
-
-    private suspend fun loadLentaNews(): ResponseBody = newsApiService.getLentaNews()
-
-    private suspend fun loadRbcNews(): ResponseBody = newsApiService.getRbcNews()
-
-    private suspend fun loadTechNews(): ResponseBody = newsApiService.getTechNews()
-
-    private suspend fun loadNplusNews(): ResponseBody = newsApiService.getNplusNews()
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val newsApiService: NewsApiService = retrofit.create(NewsApiService::class.java)
 
     suspend fun getNewsBySourceType(type: NewsSources) : ResponseBody = withContext(ioDispatcher) {
         return@withContext when (type) {
-            NewsSources.LENTA -> loadLentaNews()
-            NewsSources.RBC -> loadRbcNews()
-            NewsSources.TECH_NEWS -> loadTechNews()
-            NewsSources.NPLUS1 -> loadNplusNews()
+            NewsSources.LENTA -> newsApiService.getLentaNews()
+            NewsSources.RBC -> newsApiService.getRbcNews()
+            NewsSources.TECH_NEWS -> newsApiService.getTechNews()
+            NewsSources.NPLUS1 -> newsApiService.getNplusNews()
             else -> throw IllegalArgumentException("The source type -> $type not founded!")
         }
     }

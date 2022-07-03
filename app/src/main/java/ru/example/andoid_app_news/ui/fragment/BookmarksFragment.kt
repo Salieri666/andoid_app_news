@@ -10,23 +10,19 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import ru.example.andoid_app_news.MainApplication
+import dagger.hilt.android.AndroidEntryPoint
 import ru.example.andoid_app_news.R
 import ru.example.andoid_app_news.databinding.FragmentBookmarksBinding
 import ru.example.andoid_app_news.ui.adapter.RecyclerNewsAdapter
 import ru.example.andoid_app_news.ui.viewmodel.BookmarksViewModel
-import ru.example.andoid_app_news.ui.viewmodel.BookmarksViewModelFactory
-import ru.example.andoid_app_news.useCase.BookmarksUseCase
 
-
+@AndroidEntryPoint
 class BookmarksFragment : Fragment() {
 
     private var newsAdapter: RecyclerNewsAdapter? = null
     private var binding: FragmentBookmarksBinding? = null
 
-    private val bookmarksViewModel: BookmarksViewModel by viewModels {
-        BookmarksViewModelFactory(BookmarksUseCase((activity?.application as MainApplication).bookmarksRepo))
-    }
+    private val bookmarksViewModel: BookmarksViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,13 +67,9 @@ class BookmarksFragment : Fragment() {
     }
 
     private fun onNewsClick(position: Int) {
-        /*val intent = Intent(requireContext(), NewsActivity::class.java)
-        intent.putExtra(NewsActivity.NEWS,
-            bookmarksViewModel.allBookmarks.value[position]
-        )
-        startActivity(intent)*/
         val selectedNews = bookmarksViewModel.allBookmarks.value[position]
         val bundle = bundleOf("SELECTED_NEWS" to selectedNews)
+
         findNavController().navigate(R.id.action_bookmarksFragment_to_selectedNewsFragment, bundle)
     }
 

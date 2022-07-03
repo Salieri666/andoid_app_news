@@ -11,21 +11,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DecodeFormat
-import ru.example.andoid_app_news.MainApplication
+import dagger.hilt.android.AndroidEntryPoint
 import ru.example.andoid_app_news.R
 import ru.example.andoid_app_news.databinding.FragmentSelectedNewsBinding
 import ru.example.andoid_app_news.model.data.News
 import ru.example.andoid_app_news.ui.viewmodel.CurrentNewsViewModel
-import ru.example.andoid_app_news.ui.viewmodel.CurrentNewsViewModelFactory
-import ru.example.andoid_app_news.useCase.BookmarksUseCase
 
 private const val SELECTED_NEWS = "SELECTED_NEWS"
 
-
+@AndroidEntryPoint
 class SelectedNewsFragment : Fragment() {
-    private val currentNewsViewModel: CurrentNewsViewModel by viewModels {
-        CurrentNewsViewModelFactory(BookmarksUseCase((activity?.application as MainApplication).bookmarksRepo))
-    }
+    private val currentNewsViewModel: CurrentNewsViewModel by viewModels()
 
     private var newsItem: News? = null
     private var newsBinding: FragmentSelectedNewsBinding? = null

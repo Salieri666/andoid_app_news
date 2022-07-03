@@ -1,29 +1,35 @@
-package ru.example.andoid_app_news
+package ru.example.andoid_app_news.di
 
-import android.app.Application
+import android.content.Context
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ru.example.andoid_app_news.instance.BookmarkRoomDatabase
-import ru.example.andoid_app_news.repository.BookmarksRepo
 import java.io.File
+import javax.inject.Singleton
 
+@Module
+@InstallIn(SingletonComponent::class)
+class NetworkModule {
 
-class MainApplication : Application() {
-    private val database by lazy { BookmarkRoomDatabase.getDatabase(this) }
-
-    val bookmarksRepo by lazy { BookmarksRepo(database.bookmarksDao()) }
-
-    val httpClient by lazy {
+    @Provides
+    @Singleton
+    fun provideClient(
+        @ApplicationContext applicationContext: Context
+    ) : OkHttpClient {
         val logging = HttpLoggingInterceptor()
         logging.setLevel(HttpLoggingInterceptor.Level.BASIC)
 
         val clientBuilder = OkHttpClient().newBuilder()
 
 
-        return@lazy clientBuilder
+        return clientBuilder
             .addInterceptor(logging)
             .cache(
                 Cache(
@@ -34,9 +40,13 @@ class MainApplication : Application() {
             .build()
     }
 
-    val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8090")
+    @Provides
+    @Singleton
+    fun provideRetrofit(
+        httpClient : OkHttpClient
+    ) : Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("http://localhost/")
             .client(httpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

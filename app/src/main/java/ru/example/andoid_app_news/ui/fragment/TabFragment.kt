@@ -11,28 +11,19 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import ru.example.andoid_app_news.MainApplication
+import dagger.hilt.android.AndroidEntryPoint
 import ru.example.andoid_app_news.R
-import ru.example.andoid_app_news.api.NewsApiService
 import ru.example.andoid_app_news.databinding.FragmentTabBinding
 import ru.example.andoid_app_news.model.data.NewsSources
-import ru.example.andoid_app_news.repository.NewsRepo
 import ru.example.andoid_app_news.ui.adapter.RecyclerNewsAdapter
 import ru.example.andoid_app_news.ui.viewmodel.NewsViewModel
-import ru.example.andoid_app_news.ui.viewmodel.NewsViewModelFactory
-import ru.example.andoid_app_news.useCase.NewsUseCase
 
 private const val SOURCE = "SOURCE"
 
+@AndroidEntryPoint
 class TabFragment : Fragment() {
 
-    private val newsViewModel: NewsViewModel by viewModels {
-        NewsViewModelFactory(
-            NewsUseCase(
-                NewsRepo(NewsApiService.instance((activity?.application as MainApplication).retrofit))
-            )
-        )
-    }
+    private val newsViewModel: NewsViewModel by viewModels()
 
     private var newsAdapter: RecyclerNewsAdapter? = null
     private var binding: FragmentTabBinding? = null
@@ -85,12 +76,9 @@ class TabFragment : Fragment() {
     }
 
     private fun onNewsClick(position: Int) {
-        /*val intent = Intent(requireContext(), NewsActivity::class.java)
-        intent.putExtra(NewsActivity.NEWS, newsViewModel.news.value[position])
-        startActivity(intent)*/
-
         val selectedNews = newsViewModel.news.value[position]
         val bundle = bundleOf("SELECTED_NEWS" to selectedNews)
+
         findNavController().navigate(R.id.action_newsFragment_to_selectedNewsFragment2, bundle)
     }
 
