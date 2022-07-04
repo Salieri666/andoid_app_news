@@ -1,18 +1,17 @@
 package ru.example.andoid_app_news.useCase
 
-import android.util.Log
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import okhttp3.ResponseBody
 import ru.example.andoid_app_news.model.data.News
 import ru.example.andoid_app_news.model.data.NewsSources
-import ru.example.andoid_app_news.model.data.ResultData
 import ru.example.andoid_app_news.repository.NewsRepo
 import ru.example.andoid_app_news.rss.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val ERROR_TYPE = "ERROR_NEWS_USE_CASE"
 
 @Singleton
 class NewsUseCase @Inject constructor(
@@ -21,21 +20,15 @@ class NewsUseCase @Inject constructor(
 
     private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 
-    fun getNews(type: NewsSources): Flow<ResultData<List<News>>> = flow {
+    fun getNews(type: NewsSources): Flow<List<News>> = flow {
 
         val response = newsRepo.getNewsBySourceType(type)
         val res = parseNews(response, type)
 
-        emit(ResultData(ResultData.Status.SUCCESSES, res))
-
-    }.onStart {
-        emit(ResultData(ResultData.Status.LOADING))
-    }.catch {
-        Log.e(ERROR_TYPE, it.localizedMessage, it)
-        ResultData(ResultData.Status.FAILED, emptyList<News>())
+        emit(res)
     }.flowOn(defaultDispatcher)
 
-    fun getAllNewsByList(list: List<NewsSources>): Flow<ResultData<List<News>>> = flow {
+    fun getAllNewsByList(list: List<NewsSources>): Flow<List<News>> = flow {
 
         val news = arrayListOf<News>()
         coroutineScope {
@@ -49,13 +42,7 @@ class NewsUseCase @Inject constructor(
 
             news.sortByDescending { el -> el.sourceDate }
         }
-        emit(ResultData(ResultData.Status.SUCCESSES, news as List<News>))
-
-    }.onStart {
-        emit(ResultData(ResultData.Status.LOADING))
-    }.catch {
-        Log.e(ERROR_TYPE, it.localizedMessage, it)
-        ResultData(ResultData.Status.FAILED, emptyList<News>())
+        emit(news)
     }.flowOn(defaultDispatcher)
 
 
@@ -72,13 +59,9 @@ class NewsUseCase @Inject constructor(
 
     private fun parseNews(responseBody: ResponseBody, type: NewsSources): List<News> {
         val resultList = arrayListOf<News>()
-        try {
-            val parser = getParserBySourceType(type)
-            Log.v("Context1", "Parsing...  " + Thread.currentThread().name)
-            resultList.addAll(parser.parse(responseBody.byteStream()).items ?: emptyList())
-        } catch (e: Exception) {
-            Log.e(ERROR_TYPE, e.localizedMessage, e)
-        }
+        val parser = getParserBySourceType(type)
+        resultList.addAll(parser.parse(responseBody.byteStream()).items ?: emptyList())
+
         return resultList
     }
 }

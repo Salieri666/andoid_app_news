@@ -1,12 +1,12 @@
 package ru.example.andoid_app_news.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import ru.example.andoid_app_news.model.data.News
 import ru.example.andoid_app_news.model.data.NewsSources
-import ru.example.andoid_app_news.model.data.ResultData
 import ru.example.andoid_app_news.useCase.NewsUseCase
 import javax.inject.Inject
 
@@ -36,19 +36,21 @@ class NewsViewModel @Inject constructor(private val newsUseCase: NewsUseCase) : 
 
     private fun loadNewsToValue(
         loadingState: MutableLiveData<Boolean>,
-        loadFunc: () -> Flow<ResultData<List<News>>>
+        loadFunc: () -> Flow<List<News>>
     ) {
         loadFunc()
+            .onStart {
+                loadingState.postValue(true)
+            }
             .onEach {
-                when (it.status) {
-                    ResultData.Status.LOADING -> loadingState.postValue(true)
-                    ResultData.Status.FAILED -> loadingState.postValue(false)
-                    ResultData.Status.SUCCESSES -> {
-                        loadingState.postValue(false)
-                        _news.value = it.value!!
-                    }
-                    else -> loadingState.postValue(false)
-                }
+                _news.value = it
+            }
+            .catch {
+                loadingState.postValue(false)
+                Log.e("ERROR_TYPE", it.localizedMessage, it)
+            }
+            .onCompletion {
+                loadingState.postValue(false)
             }
             .launchIn(viewModelScope)
     }
