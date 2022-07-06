@@ -2,8 +2,6 @@ package ru.example.andoid_app_news
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ru.example.andoid_app_news.databinding.ActivityMainBinding
 
@@ -17,11 +15,11 @@ class MainActivity : AppCompatActivity() {
         mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding?.root)
 
-        mainBinding?.let {
+        /*mainBinding?.let {
             val navHostFragment =
                 supportFragmentManager.findFragmentById(it.navFragment.id) as NavHostFragment
             val navController = navHostFragment.navController
             it.bottomNavigatinView.setupWithNavController(navController)
-        }
+        }*/
     }
 }

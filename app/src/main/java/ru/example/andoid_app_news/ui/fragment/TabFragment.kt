@@ -8,8 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import ru.example.andoid_app_news.R
@@ -79,7 +78,7 @@ class TabFragment : Fragment() {
         val selectedNews = newsViewModel.news.value[position]
         val bundle = bundleOf("SELECTED_NEWS" to selectedNews)
 
-        findNavController().navigate(R.id.action_newsFragment_to_selectedNewsFragment2, bundle)
+        Navigation.findNavController(requireActivity(), R.id.nav_fragment2).navigate(R.id.action_bottomNavigationFragment_to_selectedNewsFragment3, bundle)
     }
 
 
@@ -127,13 +126,7 @@ class TabFragment : Fragment() {
 
     private fun loadNews(isRefresh: Boolean = false) {
         source?.let { newsSource ->
-            if (newsSource != NewsSources.ALL) {
-                newsViewModel.loadNews(newsSource, isRefresh)
-            } else {
-                val sharedPref = PreferenceManager.getDefaultSharedPreferences(requireContext())
-                val sources = NewsSources.getList(sharedPref, requireContext())
-                newsViewModel.loadNews(sources, isRefresh)
-            }
+            newsViewModel.loadNews(newsSource, isRefresh)
         }
     }
 }

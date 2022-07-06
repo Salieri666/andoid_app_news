@@ -23,6 +23,7 @@ class NewsRepo @Inject constructor(
             NewsSources.RBC -> newsApiService.getRbcNews()
             NewsSources.TECH_NEWS -> newsApiService.getTechNews()
             NewsSources.NPLUS1 -> newsApiService.getNplusNews()
+            NewsSources.ARZAMAS -> newsApiService.getArzamasNews()
             else -> throw IllegalArgumentException("The source type -> $type not founded!")
         }
     }

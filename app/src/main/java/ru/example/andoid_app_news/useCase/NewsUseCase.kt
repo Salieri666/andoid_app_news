@@ -52,6 +52,7 @@ class NewsUseCase @Inject constructor(
             NewsSources.RBC -> RbcRssParser()
             NewsSources.TECH_NEWS -> TechRssParser()
             NewsSources.NPLUS1 -> NplusOneRssParser()
+            NewsSources.ARZAMAS -> ArzamasRssParser()
             else -> throw IllegalArgumentException("The parser type -> $type not founded!")
         }
     }

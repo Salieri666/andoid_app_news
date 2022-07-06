@@ -8,7 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import ru.example.andoid_app_news.R
@@ -70,7 +70,8 @@ class BookmarksFragment : Fragment() {
         val selectedNews = bookmarksViewModel.allBookmarks.value[position]
         val bundle = bundleOf("SELECTED_NEWS" to selectedNews)
 
-        findNavController().navigate(R.id.action_bookmarksFragment_to_selectedNewsFragment, bundle)
+        Navigation.findNavController(requireActivity(), R.id.nav_fragment2).navigate(R.id.action_bottomNavigationFragment_to_selectedNewsFragment3, bundle)
+        //findNavController().navigate(R.id.action_bottomNavigationFragment_to_selectedNewsFragment3, bundle)
     }
 
     private fun setupRecycler() {

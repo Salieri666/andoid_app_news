@@ -55,7 +55,7 @@ class NewsFragment : Fragment() {
     }
 
     private fun prepareSourceList() : List<NewsSources> {
-        return settings.getAllowedNewsSources()
+        return settings.getAllowedNewsSources(true)
     }
 
     private fun setupTabs(sources: List<NewsSources>) {

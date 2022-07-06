@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_navigation"
-    app:startDestination="@id/news_navigation">
-
-    <include app:graph="@navigation/news_navigation" />
-    <include app:graph="@navigation/bookmarks_navigation" />
+    app:startDestination="@id/bottomNavigationFragment">
 
     <fragment
-        android:id="@+id/settingsFragment"
-        android:name="ru.example.andoid_app_news.ui.fragment.SettingsNewsFragment"
-        android:label="fragment_settings"/>
+        android:id="@+id/bottomNavigationFragment"
+        android:name="ru.example.andoid_app_news.ui.fragment.BottomNavigationFragment"
+        android:label="fragment_bottom_naviagtion"
+        tools:layout="@layout/fragment_bottom_naviagtion" >
+        <action
+            android:id="@+id/action_bottomNavigationFragment_to_selectedNewsFragment3"
+            app:destination="@id/selectedNewsFragment3"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim">
 
-
+            <argument
+                android:name="SELECTED_NEWS"
+                app:argType="ru.example.andoid_app_news.model.data.News" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/selectedNewsFragment3"
+        android:name="ru.example.andoid_app_news.ui.fragment.SelectedNewsFragment"
+        android:label="SelectedNewsFragment" />
 </navigation>

@@ -23,6 +23,11 @@
             android:defaultValue="true"
             app:title="@string/nplus_news" />
 
+        <SwitchPreferenceCompat
+            app:key="@string/arzamas"
+            android:defaultValue="true"
+            app:title="@string/arzamas" />
+
 
     </PreferenceCategory>
 

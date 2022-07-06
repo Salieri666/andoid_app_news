@@ -19,9 +19,13 @@ class SettingsServiceImpl @Inject constructor(
         return sharedPref.getBoolean(key, false);
     }
 
-    override fun getAllowedNewsSources(): List<NewsSources> {
+    override fun getAllowedNewsSources(withAll: Boolean): List<NewsSources> {
         val array = enumValues<NewsSources>()
-        val result = mutableListOf(NewsSources.ALL)
+        val result = mutableListOf<NewsSources>()
+
+        if (withAll)
+            result.add(NewsSources.ALL)
+
         for (el in array) {
             if (el != NewsSources.ALL && sharedPref.getBoolean(appContext.getString(el.id), true))
                 result.add(el)

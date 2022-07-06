@@ -12,7 +12,8 @@ enum class NewsSources(val id: Int) : Parcelable {
     LENTA(R.string.lenta_title),
     RBC(R.string.rbc_title),
     TECH_NEWS(R.string.tech_news),
-    NPLUS1(R.string.nplus_news);
+    NPLUS1(R.string.nplus_news),
+    ARZAMAS(R.string.arzamas);
 
     companion object {
         fun getList(sharedPref: SharedPreferences, context: Context?): MutableList<NewsSources> {

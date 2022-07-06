@@ -7,11 +7,15 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import ru.example.andoid_app_news.model.data.News
 import ru.example.andoid_app_news.model.data.NewsSources
+import ru.example.andoid_app_news.service.SettingsService
 import ru.example.andoid_app_news.useCase.NewsUseCase
 import javax.inject.Inject
 
 @HiltViewModel
-class NewsViewModel @Inject constructor(private val newsUseCase: NewsUseCase) : BaseViewModel() {
+class NewsViewModel @Inject constructor(
+    private val newsUseCase: NewsUseCase,
+    private val settingsService: SettingsService
+    ) : BaseViewModel() {
 
     private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     private val _isRefreshing: MutableLiveData<Boolean> = MutableLiveData(false)
@@ -24,13 +28,12 @@ class NewsViewModel @Inject constructor(private val newsUseCase: NewsUseCase) : 
 
     fun loadNews(source: NewsSources, isRefresh: Boolean) {
         loadNewsToValue(if (isRefresh) _isRefreshing else _isLoading) {
-            newsUseCase.getNews(source)
-        }
-    }
-
-    fun loadNews(sources: List<NewsSources>, isRefresh: Boolean) {
-        loadNewsToValue(if (isRefresh) _isRefreshing else _isLoading) {
-            newsUseCase.getAllNewsByList(sources)
+            if (source != NewsSources.ALL) {
+                newsUseCase.getNews(source)
+            } else {
+                val sources = settingsService.getAllowedNewsSources(false)
+                newsUseCase.getAllNewsByList(sources)
+            }
         }
     }
 

@@ -6,5 +6,5 @@ interface SettingsService {
 
     fun checkKey(key: String) : Boolean
 
-    fun getAllowedNewsSources() : List<NewsSources>
+    fun getAllowedNewsSources(withAll: Boolean) : List<NewsSources>
 }
